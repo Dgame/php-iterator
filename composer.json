@@ -23,6 +23,7 @@
         "files": [
             "src/Iterator.php",
             "src/Cycle.php",
+            "src/Assoc.php",
             "src/Optional/Optional.php"
         ],
         "psr-4": {

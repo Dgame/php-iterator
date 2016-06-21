@@ -2,10 +2,12 @@
 
 require_once '../vendor/autoload.php';
 
+use function Dgame\Iterator\assoc;
 use function Dgame\Iterator\chain;
 use function Dgame\Iterator\chars;
 use function Dgame\Iterator\cycle;
 use function Dgame\Iterator\iter;
+use function Dgame\Iterator\keys;
 
 class IteratorTest extends PHPUnit_Framework_TestCase
 {
@@ -61,6 +63,39 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $it = chain([1, 2, 3], ['a', 'b', 'c']);
 
         $this->assertEquals($it->collect(), [1, 2, 3, 'a', 'b', 'c']);
+    }
+
+    public function testAssocIter()
+    {
+        $it = iter(['a' => 'z', 'b' => 'y']);
+
+        $this->assertEquals($it->next()->get(), 'z');
+        $this->assertEquals($it->next()->get(), 'y');
+        $this->assertTrue($it->next()->isNone());
+    }
+
+    public function testAssocKeys()
+    {
+        $it = keys(['a' => 'z', 'b' => 'y']);
+
+        $this->assertEquals($it->next()->get(), 'a');
+        $this->assertEquals($it->next()->get(), 'b');
+        $this->assertTrue($it->next()->isNone());
+    }
+
+    public function testAssoc()
+    {
+        $it = assoc(['a' => 'z', 'b' => 'y']);
+
+        $this->assertEquals($it->getKeys()->next()->get(), 'a');
+        $this->assertEquals($it->getKeys()->next()->get(), 'b');
+        $this->assertTrue($it->getKeys()->next()->isNone());
+
+        $this->assertEquals($it->getValues()->next()->get(), 'z');
+        $this->assertEquals($it->getValues()->next()->get(), 'y');
+        $this->assertTrue($it->getValues()->next()->isNone());
+
+        $this->assertEquals($it->combine(), ['a' => 'z', 'b' => 'y']);
     }
 
     public function testChunks()
@@ -189,5 +224,19 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($result->isSome());
         $this->assertEquals($result->get(), 1);
         $this->assertTrue($it->indexOf('z')->isNone());
+    }
+
+    public function testAmount()
+    {
+        $this->assertEquals(iter(range(0, 10))->amount(), 11);
+        $this->assertEquals(chars('Hallo Welt')->amount(), 10);
+    }
+
+    public function testAverage()
+    {
+        $it = iter(range(1, 8));
+
+        $this->assertEquals($it->amount(), 8);
+        $this->assertEquals($it->average(), 4.5);
     }
 }

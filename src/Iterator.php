@@ -234,6 +234,22 @@ final class Iterator
     }
 
     /**
+     * @return int
+     */
+    public function amount() : int
+    {
+        return count($this->data);
+    }
+
+    /**
+     * @return float
+     */
+    public function average() : float
+    {
+        return $this->sum() / $this->amount();
+    }
+
+    /**
      * @return Iterator
      */
     public function reverse() : Iterator
@@ -280,7 +296,7 @@ final class Iterator
      */
     public function isValid() : bool
     {
-        return array_key_exists($this->index, $this->data);
+        return $this->index < $this->amount();
     }
 
     /**
@@ -354,5 +370,15 @@ function iter(array $data) : Iterator
  */
 function chars(string $str) : Iterator
 {
-    return iter(str_split($str));
+    return new Iterator(str_split($str));
+}
+
+/**
+ * @param array $data
+ *
+ * @return Iterator
+ */
+function keys(array $data) : Iterator
+{
+    return new Iterator(array_keys($data));
 }
