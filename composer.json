@@ -1,0 +1,32 @@
+{
+    "name": "dgame/php-iterator",
+    "description": "php iterator",
+    "license": "MIT",
+    "type": "library",
+    "homepage": "https://github.com/php-iterator",
+    "authors": [
+        {
+            "name": "Randy Schütt",
+            "email": "rswhite4@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.*.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ],
+        "files": [
+            "src/Iterator.php",
+            "src/Cycle.php",
+            "src/Optional/Optional.php"
+        ],
+        "psr-4": {
+            "Dgame\\Range\\": "src/"
+        }
+    }
+}
