@@ -70,6 +70,14 @@ final class Iterator
     /**
      * @return Iterator
      */
+    public function filterEmpty() : Iterator
+    {
+        return new self(array_filter($this->data));
+    }
+
+    /**
+     * @return Iterator
+     */
     public function group() : Iterator
     {
         $result = [];

@@ -98,6 +98,15 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($it->combine(), ['a' => 'z', 'b' => 'y']);
     }
 
+    public function testAssocAlignment()
+    {
+        $it = assoc(['name' => 'Foo', 'test' => null]);
+        $iv = $it->getValues()->filterEmpty();
+        $it->setValues($iv);
+
+        $this->assertEquals($it->combine(), ['name' => 'Foo']);
+    }
+
     public function testChunks()
     {
         $it = chars('FooBar')->chunks(2);
