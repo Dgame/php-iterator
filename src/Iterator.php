@@ -28,7 +28,7 @@ final class Iterator
      */
     public function __construct(array $data)
     {
-        $this->data = array_values($data);
+        $this->data = $data;
     }
 
     /**
@@ -85,7 +85,7 @@ final class Iterator
             $result[$value][] = $value;
         }
 
-        return new self($result);
+        return iter($result);
     }
 
     /**
@@ -368,7 +368,7 @@ function chain(array ...$args) : Iterator
  */
 function iter(array $data) : Iterator
 {
-    return new Iterator($data);
+    return new Iterator(array_values($data));
 }
 
 /**

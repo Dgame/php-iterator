@@ -105,6 +105,20 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $it->setValues($iv);
 
         $this->assertEquals($it->combine(), ['name' => 'Foo']);
+
+        $it = assoc(['name' => false, 'age' => 42]);
+        $iv = $it->getValues()->filterEmpty();
+        $it->setValues($iv);
+
+        $this->assertEquals($it->combine(), ['age' => 42]);
+
+        $it = assoc(['abc' => 'test', 'a' => 'foobar']);
+        $ik = $it->getKeys()->filter(function(string $key) {
+            return strlen($key) > 1;
+        });
+        $it->setKeys($ik);
+
+        $this->assertEquals($it->combine(), ['abc' => 'test']);
     }
 
     public function testChunks()

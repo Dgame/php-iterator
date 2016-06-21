@@ -68,11 +68,14 @@ final class Assoc
         $keys   = $this->keys->collect();
         $values = $this->values->collect();
 
-        if ($this->keys->amount() !== $this->values->amount()) {
-            $keys = array_intersect_key($keys, $values);
+        $output = [];
+        foreach ($keys as $i => $key) {
+            if (array_key_exists($i, $values)) {
+                $output[$key] = $values[$i];
+            }
         }
 
-        return array_combine($keys, $values);
+        return $output;
     }
 }
 
