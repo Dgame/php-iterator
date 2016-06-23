@@ -12,6 +12,19 @@ use function Dgame\Iterator\keys;
 
 class IteratorTest extends TestCase
 {
+    public function testOptional()
+    {
+        $it = iter(['a', 'b', false, null, 0, 1]);
+
+        $this->assertTrue($it->next()->isSome());
+        $this->assertTrue($it->next()->isSome());
+        $this->assertTrue($it->next()->isNone());
+        $this->assertTrue($it->next()->isNone());
+        $this->assertTrue($it->next()->isSome());
+        $this->assertTrue($it->next()->isSome());
+        $this->assertFalse($it->isValid());
+    }
+
     public function testChars()
     {
         $it = chars('Hallo');

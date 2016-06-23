@@ -14,14 +14,24 @@ final class Some extends Optional
     private $value = null;
 
     /**
+     * @param $value
+     *
+     * @return bool
+     */
+    public static function Verify($value) : bool
+    {
+        return $value !== null && $value !== false;
+    }
+
+    /**
      * Some constructor.
      *
      * @param $value
      */
     public function __construct($value)
     {
-        if ($value === null) {
-            throw new \Exception('That is not some value');
+        if (!self::Verify($value)) {
+            throw new \Exception('That is not a valid value');
         }
 
         $this->value = $value;
@@ -38,7 +48,7 @@ final class Some extends Optional
     /**
      * @return mixed
      */
-    public function maybe()
+    public function assume()
     {
         return $this->get();
     }
@@ -56,6 +66,6 @@ final class Some extends Optional
      */
     public function __toString() : string
     {
-        return sprintf('Some(%s)', $this->value);
+        return sprintf('Some(%s)', var_export($this->value, true));
     }
 }

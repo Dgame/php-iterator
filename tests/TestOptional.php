@@ -3,7 +3,6 @@
 require_once '../vendor/autoload.php';
 
 use Dgame\Iterator\Optional\NullObject;
-use Dgame\Iterator\Optional\Optional;
 use PHPUnit\Framework\TestCase;
 use function Dgame\Iterator\Optional\maybe;
 use function Dgame\Iterator\Optional\none;
@@ -11,16 +10,6 @@ use function Dgame\Iterator\Optional\some;
 
 class TestOptional extends TestCase
 {
-    public function testIdentify()
-    {
-        $some = Optional::Identify('Foo');
-        $this->assertTrue($some->isSome());
-        $this->assertEquals('Foo', $some->get());
-
-        $none = Optional::Identify(null);
-        $this->assertTrue($none->isNone());
-    }
-
     public function testSome()
     {
         $some = some(42);
@@ -56,9 +45,9 @@ class TestOptional extends TestCase
 
         $some = some($a);
         $this->assertEquals(42, $some->get()->test());
-        $this->assertEquals(42, $some->maybe()->test());
+        $this->assertEquals(42, $some->assume()->test());
 
         $none = none();
-        $this->assertSame(NullObject::Instance(), $none->maybe()->test());
+        $this->assertSame(NullObject::Instance(), $none->assume()->test());
     }
 }
