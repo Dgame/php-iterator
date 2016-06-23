@@ -23,7 +23,6 @@
         "files": [
             "src/Iterator.php",
             "src/Cycle.php",
-            "src/Assoc.php",
             "src/Only.php",
             "src/Optional/Optional.php"
         ],

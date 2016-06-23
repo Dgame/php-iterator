@@ -18,11 +18,7 @@ final class Iterator
      */
     private $data = [];
     /**
-     * @var int
-     */
-    private $iteration = 0;
-    /**
-     * @var null
+     * @var ?int
      */
     private $length = null;
 
@@ -58,6 +54,22 @@ final class Iterator
     public function consume() : Consume
     {
         return new Consume($this);
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function values() : Iterator
+    {
+        return new self(array_values($this->data));
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function keys() : Iterator
+    {
+        return new self(array_keys($this->data));
     }
 
     /**
@@ -98,7 +110,7 @@ final class Iterator
             $result[$value][] = $value;
         }
 
-        return iter($result);
+        return new self($result);
     }
 
     /**
@@ -345,13 +357,41 @@ final class Iterator
     /**
      * @return Optional
      */
+    public function key() : Optional
+    {
+        return maybe(key($this->data));
+    }
+
+    /**
+     * @return Optional
+     */
     public function current() : Optional
     {
-        if ($this->isValid()) {
-            return maybe($this->data[$this->iteration]);
-        }
+        return maybe(current($this->data));
+    }
 
-        return none();
+    /**
+     * @return Optional
+     */
+    public function previous() : Optional
+    {
+        return maybe(prev($this->data));
+    }
+
+    /**
+     * @return Optional
+     */
+    public function begin() : Optional
+    {
+        return maybe(reset($this->data));
+    }
+
+    /**
+     * @return Optional
+     */
+    public function end() : Optional
+    {
+        return maybe(end($this->data));
     }
 
     /**
@@ -359,22 +399,15 @@ final class Iterator
      */
     public function peek() : Optional
     {
-        if ($this->hasNext()) {
-            $index = $this->iteration + 1;
-            $value = $this->data[$index];
+        next($this->data);
+        if ($this->isValid()) {
+            $result = $this->current();
+            prev($this->data);
 
-            return maybe($value);
+            return $result;
         }
 
         return none();
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasNext() : bool
-    {
-        return ($this->iteration + 1) < $this->length();
     }
 
     /**
@@ -384,7 +417,7 @@ final class Iterator
     {
         $result = $this->current();
         if ($this->isValid()) {
-            $this->iteration++;
+            next($this->data);
         }
 
         return $result;
@@ -403,15 +436,7 @@ final class Iterator
      */
     public function isValid() : bool
     {
-        return $this->iteration < $this->length();
-    }
-
-    /**
-     *
-     */
-    public function reset()
-    {
-        $this->iteration = 0;
+        return key($this->data) !== null;
     }
 
     /**
@@ -467,7 +492,7 @@ function chain(array ...$args) : Iterator
  */
 function iter(array $data) : Iterator
 {
-    return new Iterator(array_values($data));
+    return new Iterator($data);
 }
 
 /**

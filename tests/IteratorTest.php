@@ -26,6 +26,16 @@ class IteratorTest extends TestCase
         $this->assertFalse($it->isValid());
     }
 
+    public function testFilterEmpty()
+    {
+        $it = iter(['a', 'b', false, null, 0, 1])->filterEmpty();
+
+        $this->assertEquals('a', $it->next()->get());
+        $this->assertEquals('b', $it->next()->get());
+        $this->assertEquals(1, $it->next()->get());
+        $this->assertFalse($it->isValid());
+    }
+
     public function testOnly()
     {
         $it = only('a')->repeat(4);
@@ -88,60 +98,31 @@ class IteratorTest extends TestCase
         $this->assertEquals([1, 2, 3, 'a', 'b', 'c'], $it->collect());
     }
 
-    public function testAssocIter()
+    public function testValues()
     {
-        $it = iter(['a' => 'z', 'b' => 'y']);
-
-        $this->assertEquals('z', $it->next()->get());
-        $this->assertEquals('y', $it->next()->get());
-        $this->assertTrue($it->next()->isNone());
+        $this->assertEquals(iter(['a' => 'z', 'b' => 'y'])->values()->collect(), ['z', 'y']);
     }
 
-    public function testAssocKeys()
+    public function testKeys()
     {
-        $it = keys(['a' => 'z', 'b' => 'y']);
-
-        $this->assertEquals('a', $it->next()->get());
-        $this->assertEquals('b', $it->next()->get());
-        $this->assertTrue($it->next()->isNone());
+        $this->assertEquals(iter(['a' => 'z', 'b' => 'y'])->keys()->collect(), ['a', 'b']);
     }
 
     public function testAssoc()
     {
-        $it = assoc(['a' => 'z', 'b' => 'y']);
+        $it = iter(['a' => 'z', 'b' => 'y']);
 
-        $this->assertEquals('a', $it->getKeys()->next()->get());
-        $this->assertEquals('b', $it->getKeys()->next()->get());
-        $this->assertTrue($it->getKeys()->next()->isNone());
+        $this->assertEquals(['a' => 'z', 'b' => 'y'], $it->collect());
 
-        $this->assertEquals('z', $it->getValues()->next()->get());
-        $this->assertEquals('y', $it->getValues()->next()->get());
-        $this->assertTrue($it->getValues()->next()->isNone());
+        $it = iter(['name' => 'Foo', 'test' => null]);
+        $it = $it->filterEmpty();
 
-        $this->assertEquals(['a' => 'z', 'b' => 'y'], $it->combine());
-    }
+        $this->assertEquals(['name' => 'Foo'], $it->collect());
 
-    public function testAssocAlignment()
-    {
-        $it = assoc(['name' => 'Foo', 'test' => null]);
-        $iv = $it->getValues()->filterEmpty();
-        $it->setValues($iv);
+        $it = iter(['name' => false, 'age' => 42]);
+        $it = $it->filterEmpty();
 
-        $this->assertEquals(['name' => 'Foo'], $it->combine());
-
-        $it = assoc(['name' => false, 'age' => 42]);
-        $iv = $it->getValues()->filterEmpty();
-        $it->setValues($iv);
-
-        $this->assertEquals(['age' => 42], $it->combine());
-
-        $it = assoc(['abc' => 'test', 'a' => 'foobar']);
-        $ik = $it->getKeys()->filter(function(string $key) {
-            return strlen($key) > 1;
-        });
-        $it->setKeys($ik);
-
-        $this->assertEquals(['abc' => 'test'], $it->combine());
+        $this->assertEquals(['age' => 42], $it->collect());
     }
 
     public function testChunks()
@@ -155,7 +136,11 @@ class IteratorTest extends TestCase
     {
         $it = iter([1, 2, 4, 2, 3, 2, 4, 5, 1, 2, 4])->group();
 
-        $this->assertEquals([[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]], $it->collect());
+        $this->assertEquals([[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]], $it->values()->collect());
+
+        $it = iter(['a' => 0, 'b' => 1, 'c' => 0])->group();
+
+        $this->assertEquals([[0, 0], [1]], $it->collect());
     }
 
     public function testFold()
@@ -236,15 +221,10 @@ class IteratorTest extends TestCase
         $this->assertEquals('a', $it->peek()->get());
         $this->assertEquals('H', $it->current()->get());
 
-        $this->assertTrue($it->hasNext());
         $this->assertEquals('H', $it->next()->get());
-        $this->assertTrue($it->hasNext());
-
         $this->assertEquals('a', $it->current()->get());
         $this->assertEquals('l', $it->peek()->get());
         $this->assertEquals('a', $it->current()->get());
-
-        $this->assertTrue($it->hasNext());
     }
 
     public function testConsume()
