@@ -38,7 +38,7 @@ final class Some extends Optional
     /**
      * @return mixed
      */
-    public function may()
+    public function maybe()
     {
         return $this->get();
     }

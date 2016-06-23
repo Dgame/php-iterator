@@ -2,6 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
+use PHPUnit\Framework\TestCase;
 use function Dgame\Iterator\assoc;
 use function Dgame\Iterator\chain;
 use function Dgame\Iterator\chars;
@@ -9,17 +10,18 @@ use function Dgame\Iterator\cycle;
 use function Dgame\Iterator\iter;
 use function Dgame\Iterator\keys;
 
-class IteratorTest extends PHPUnit_Framework_TestCase
+class IteratorTest extends TestCase
 {
     public function testChars()
     {
         $it = chars('Hallo');
 
-        $this->assertEquals($it->next()->get(), 'H');
-        $this->assertEquals($it->next()->get(), 'a');
-        $this->assertEquals($it->next()->get(), 'l');
-        $this->assertEquals($it->next()->get(), 'l');
-        $this->assertEquals($it->next()->get(), 'o');
+        $this->assertEquals('H', $it->current()->get());
+        $this->assertEquals('H', $it->next()->get());
+        $this->assertEquals('a', $it->next()->get());
+        $this->assertEquals('l', $it->next()->get());
+        $this->assertEquals('l', $it->next()->get());
+        $this->assertEquals('o', $it->next()->get());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -27,8 +29,8 @@ class IteratorTest extends PHPUnit_Framework_TestCase
     {
         $it = chars('Hallo');
 
-        $this->assertEquals($it->collect(), ['H', 'a', 'l', 'l', 'o']);
-        $this->assertEquals($it->implode(), 'Hallo');
+        $this->assertEquals(['H', 'a', 'l', 'l', 'o'], $it->collect());
+        $this->assertEquals('Hallo', $it->implode());
     }
 
     public function testTake()
@@ -36,8 +38,8 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $it = chars('Hallo');
         $it = $it->take(2);
 
-        $this->assertEquals($it->next()->get(), 'H');
-        $this->assertEquals($it->next()->get(), 'a');
+        $this->assertEquals('H', $it->next()->get());
+        $this->assertEquals('a', $it->next()->get());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -46,8 +48,8 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $it = chars('Hallo');
         $it = $it->skip(3);
 
-        $this->assertEquals($it->next()->get(), 'l');
-        $this->assertEquals($it->next()->get(), 'o');
+        $this->assertEquals('l', $it->next()->get());
+        $this->assertEquals('o', $it->next()->get());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -55,22 +57,22 @@ class IteratorTest extends PHPUnit_Framework_TestCase
     {
         $it = cycle([1, 2, 3])->take(2);
 
-        $this->assertEquals($it->collect(), [1, 2, 3, 1, 2, 3]);
+        $this->assertEquals([1, 2, 3, 1, 2, 3], $it->collect());
     }
 
     public function testChain()
     {
         $it = chain([1, 2, 3], ['a', 'b', 'c']);
 
-        $this->assertEquals($it->collect(), [1, 2, 3, 'a', 'b', 'c']);
+        $this->assertEquals([1, 2, 3, 'a', 'b', 'c'], $it->collect());
     }
 
     public function testAssocIter()
     {
         $it = iter(['a' => 'z', 'b' => 'y']);
 
-        $this->assertEquals($it->next()->get(), 'z');
-        $this->assertEquals($it->next()->get(), 'y');
+        $this->assertEquals('z', $it->next()->get());
+        $this->assertEquals('y', $it->next()->get());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -78,8 +80,8 @@ class IteratorTest extends PHPUnit_Framework_TestCase
     {
         $it = keys(['a' => 'z', 'b' => 'y']);
 
-        $this->assertEquals($it->next()->get(), 'a');
-        $this->assertEquals($it->next()->get(), 'b');
+        $this->assertEquals('a', $it->next()->get());
+        $this->assertEquals('b', $it->next()->get());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -87,15 +89,15 @@ class IteratorTest extends PHPUnit_Framework_TestCase
     {
         $it = assoc(['a' => 'z', 'b' => 'y']);
 
-        $this->assertEquals($it->getKeys()->next()->get(), 'a');
-        $this->assertEquals($it->getKeys()->next()->get(), 'b');
+        $this->assertEquals('a', $it->getKeys()->next()->get());
+        $this->assertEquals('b', $it->getKeys()->next()->get());
         $this->assertTrue($it->getKeys()->next()->isNone());
 
-        $this->assertEquals($it->getValues()->next()->get(), 'z');
-        $this->assertEquals($it->getValues()->next()->get(), 'y');
+        $this->assertEquals('z', $it->getValues()->next()->get());
+        $this->assertEquals('y', $it->getValues()->next()->get());
         $this->assertTrue($it->getValues()->next()->isNone());
 
-        $this->assertEquals($it->combine(), ['a' => 'z', 'b' => 'y']);
+        $this->assertEquals(['a' => 'z', 'b' => 'y'], $it->combine());
     }
 
     public function testAssocAlignment()
@@ -104,13 +106,13 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $iv = $it->getValues()->filterEmpty();
         $it->setValues($iv);
 
-        $this->assertEquals($it->combine(), ['name' => 'Foo']);
+        $this->assertEquals(['name' => 'Foo'], $it->combine());
 
         $it = assoc(['name' => false, 'age' => 42]);
         $iv = $it->getValues()->filterEmpty();
         $it->setValues($iv);
 
-        $this->assertEquals($it->combine(), ['age' => 42]);
+        $this->assertEquals(['age' => 42], $it->combine());
 
         $it = assoc(['abc' => 'test', 'a' => 'foobar']);
         $ik = $it->getKeys()->filter(function(string $key) {
@@ -118,21 +120,21 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         });
         $it->setKeys($ik);
 
-        $this->assertEquals($it->combine(), ['abc' => 'test']);
+        $this->assertEquals(['abc' => 'test'], $it->combine());
     }
 
     public function testChunks()
     {
         $it = chars('FooBar')->chunks(2);
 
-        $this->assertEquals($it->collect(), [['F', 'o'], ['o', 'B'], ['a', 'r']]);
+        $this->assertEquals([['F', 'o'], ['o', 'B'], ['a', 'r']], $it->collect());
     }
 
     public function testGroup()
     {
         $it = iter([1, 2, 4, 2, 3, 2, 4, 5, 1, 2, 4])->group();
 
-        $this->assertEquals($it->collect(), [[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]]);
+        $this->assertEquals([[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]], $it->collect());
     }
 
     public function testFold()
@@ -147,8 +149,8 @@ class IteratorTest extends PHPUnit_Framework_TestCase
             return $sum + $a;
         };
 
-        $this->assertEquals($it->fold($sum1), 21);
-        $this->assertEquals($it->fold($sum2, 42), 63);
+        $this->assertEquals(21, $it->fold($sum1));
+        $this->assertEquals(63, $it->fold($sum2, 42));
     }
 
     public function testTakeWhile()
@@ -159,7 +161,7 @@ class IteratorTest extends PHPUnit_Framework_TestCase
             return $item < 10;
         };
 
-        $this->assertEquals($it->takeWhile($belowTen)->collect(), [0, 1, 2]);
+        $this->assertEquals([0, 1, 2], $it->takeWhile($belowTen)->collect());
     }
 
     public function testSkipWhile()
@@ -170,7 +172,79 @@ class IteratorTest extends PHPUnit_Framework_TestCase
             return $item < 10;
         };
 
-        $this->assertEquals($it->skipWhile($belowTen)->collect(), [10, 20]);
+        $this->assertEquals([10, 20], $it->skipWhile($belowTen)->collect());
+    }
+
+    public function testBefore()
+    {
+        $it = chars("abcdef");
+        $it = $it->before('c');
+
+        $this->assertEquals('ab', $it->implode());
+    }
+
+    public function testAfter()
+    {
+        $it = chars("abcdef");
+        $it = $it->after('d');
+
+        $this->assertEquals('ef', $it->implode());
+    }
+
+    public function testFrom()
+    {
+        $it = chars("abcdef");
+        $it = $it->from('d');
+
+        $this->assertEquals('def', $it->implode());
+    }
+
+    public function testUntil()
+    {
+        $it = chars("abcdef");
+        $it = $it->until('c');
+
+        $this->assertEquals('abc', $it->implode());
+    }
+
+    public function testPeekNext()
+    {
+        $it = chars('Hal');
+
+        $this->assertEquals('H', $it->current()->get());
+        $this->assertEquals('a', $it->peek()->get());
+        $this->assertEquals('H', $it->current()->get());
+
+        $this->assertTrue($it->hasNext());
+        $this->assertEquals('H', $it->next()->get());
+        $this->assertTrue($it->hasNext());
+
+        $this->assertEquals('a', $it->current()->get());
+        $this->assertEquals('l', $it->peek()->get());
+        $this->assertEquals('a', $it->current()->get());
+
+        $this->assertTrue($it->hasNext());
+    }
+
+    public function testConsume()
+    {
+        $it = chars('Hal')->consume();
+
+        $this->assertEquals('H', $it->popFront()->get());
+
+        $this->assertEquals('a', $it->front()->get());
+        $this->assertEquals('a', $it->front()->get());
+
+        $this->assertEquals('l', $it->popBack()->get());
+
+        $this->assertEquals('a', $it->back()->get());
+        $this->assertEquals('a', $it->front()->get());
+
+        $this->assertEquals('a', $it->popFront()->get());
+
+        $this->assertTrue($it->front()->isNone());
+        $this->assertTrue($it->back()->isNone());
+        $this->assertTrue($it->isEmpty());
     }
 
     public function testAll()
@@ -203,28 +277,28 @@ class IteratorTest extends PHPUnit_Framework_TestCase
     {
         $it = iter([1, 2, 3]);
 
-        $this->assertEquals($it->sum(), 6);
+        $this->assertEquals(6, $it->sum());
     }
 
     public function testProduct()
     {
         $it = iter([1, 2, 3, 4]);
 
-        $this->assertEquals($it->product(), 24);
+        $this->assertEquals(24, $it->product());
     }
 
     public function testMax()
     {
         $it = iter([1, 2, 3, 4]);
 
-        $this->assertEquals($it->max(), 4);
+        $this->assertEquals(4, $it->max());
     }
 
     public function testMin()
     {
         $it = iter([1, 2, 3, 4]);
 
-        $this->assertEquals($it->min(), 1);
+        $this->assertEquals(1, $it->min());
     }
 
     public function testFind()
@@ -234,7 +308,7 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $result = $it->find('a');
 
         $this->assertTrue($result->isSome());
-        $this->assertEquals($result->get(), 'a');
+        $this->assertEquals('a', $result->get());
         $this->assertTrue($it->find('z')->isNone());
     }
 
@@ -245,21 +319,21 @@ class IteratorTest extends PHPUnit_Framework_TestCase
         $result = $it->indexOf('b');
 
         $this->assertTrue($result->isSome());
-        $this->assertEquals($result->get(), 1);
+        $this->assertEquals(1, $result->get());
         $this->assertTrue($it->indexOf('z')->isNone());
     }
 
     public function testAmount()
     {
-        $this->assertEquals(iter(range(0, 10))->amount(), 11);
-        $this->assertEquals(chars('Hallo Welt')->amount(), 10);
+        $this->assertEquals(11, iter(range(0, 10))->length());
+        $this->assertEquals(10, chars('Hallo Welt')->length());
     }
 
     public function testAverage()
     {
         $it = iter(range(1, 8));
 
-        $this->assertEquals($it->amount(), 8);
-        $this->assertEquals($it->average(), 4.5);
+        $this->assertEquals(8, $it->length());
+        $this->assertEquals(4.5, $it->average());
     }
 }

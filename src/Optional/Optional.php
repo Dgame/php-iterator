@@ -9,6 +9,20 @@ namespace Dgame\Iterator\Optional;
 abstract class Optional
 {
     /**
+     * @param $value
+     *
+     * @return Optional
+     */
+    public static function Identify($value) : Optional
+    {
+        if ($value !== null) {
+            return some($value);
+        }
+
+        return none();
+    }
+
+    /**
      * @return bool
      */
     public function isSome() : bool
@@ -27,7 +41,7 @@ abstract class Optional
     /**
      * @return mixed
      */
-    abstract public function may();
+    abstract public function maybe();
 
     /**
      * @return mixed
@@ -51,4 +65,14 @@ function some($value) : Some
 function none() : None
 {
     return None::Instance();
+}
+
+/**
+ * @param $value
+ *
+ * @return Maybe
+ */
+function maybe($value) : Maybe
+{
+    return new Maybe($value);
 }

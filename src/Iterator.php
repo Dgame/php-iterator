@@ -3,6 +3,7 @@
 namespace Dgame\Iterator;
 
 use Dgame\Iterator\Optional\Optional;
+use function Dgame\Iterator\Optional\maybe;
 use function Dgame\Iterator\Optional\none;
 use function Dgame\Iterator\Optional\some;
 
@@ -19,7 +20,11 @@ final class Iterator
     /**
      * @var int
      */
-    private $index = 0;
+    private $iteration = 0;
+    /**
+     * @var null
+     */
+    private $length = null;
 
     /**
      * Iterator constructor.
@@ -45,6 +50,14 @@ final class Iterator
     public function implode(string $glue = '') : string
     {
         return implode($glue, $this->data);
+    }
+
+    /**
+     * @return Consume
+     */
+    public function consume() : Consume
+    {
+        return new Consume($this);
     }
 
     /**
@@ -167,6 +180,66 @@ final class Iterator
     }
 
     /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function before($value) : Iterator
+    {
+        $index = $this->indexOf($value);
+        if ($index->isSome()) {
+            return $this->take($index->get());
+        }
+
+        return new self([]);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function after($value) : Iterator
+    {
+        $index = $this->indexOf($value);
+        if ($index->isSome()) {
+            return $this->skip($index->get() + 1);
+        }
+
+        return new self([]);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function from($value) : Iterator
+    {
+        $index = $this->indexOf($value);
+        if ($index->isSome()) {
+            return $this->skip($index->get());
+        }
+
+        return new self([]);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function until($value) : Iterator
+    {
+        $index = $this->indexOf($value);
+        if ($index->isSome()) {
+            return $this->take($index->get() + 1);
+        }
+
+        return new self([]);
+    }
+
+    /**
      * @param callable $callback
      * @param null     $initial
      *
@@ -244,9 +317,13 @@ final class Iterator
     /**
      * @return int
      */
-    public function amount() : int
+    public function length() : int
     {
-        return count($this->data);
+        if ($this->length === null) {
+            $this->length = count($this->data);
+        }
+
+        return $this->length;
     }
 
     /**
@@ -254,7 +331,7 @@ final class Iterator
      */
     public function average() : float
     {
-        return $this->sum() / $this->amount();
+        return $this->sum() / $this->length();
     }
 
     /**
@@ -271,7 +348,7 @@ final class Iterator
     public function current() : Optional
     {
         if ($this->isValid()) {
-            return some($this->data[$this->index]);
+            return maybe($this->data[$this->iteration]);
         }
 
         return none();
@@ -280,12 +357,34 @@ final class Iterator
     /**
      * @return Optional
      */
+    public function peek() : Optional
+    {
+        if ($this->hasNext()) {
+            $index = $this->iteration + 1;
+            $value = $this->data[$index];
+
+            return maybe($value);
+        }
+
+        return none();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasNext() : bool
+    {
+        return ($this->iteration + 1) < $this->length();
+    }
+
+    /**
+     * @return Optional
+     */
     public function next() : Optional
     {
         $result = $this->current();
-
         if ($this->isValid()) {
-            $this->index++;
+            $this->iteration++;
         }
 
         return $result;
@@ -304,15 +403,15 @@ final class Iterator
      */
     public function isValid() : bool
     {
-        return $this->index < $this->amount();
+        return $this->iteration < $this->length();
     }
 
     /**
      *
      */
-    public function rewind()
+    public function reset()
     {
-        $this->index = 0;
+        $this->iteration = 0;
     }
 
     /**
@@ -324,7 +423,7 @@ final class Iterator
     {
         $index = $this->indexOf($value);
         if ($index->isSome()) {
-            return some($this->data[$index->get()]);
+            return maybe($this->data[$index->get()]);
         }
 
         return none();

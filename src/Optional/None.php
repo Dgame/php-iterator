@@ -43,7 +43,7 @@ final class None extends Optional
     /**
      * @return NullObject
      */
-    public function may()
+    public function maybe()
     {
         return NullObject::Instance();
     }
