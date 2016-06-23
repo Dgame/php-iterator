@@ -9,6 +9,7 @@ use function Dgame\Iterator\chars;
 use function Dgame\Iterator\cycle;
 use function Dgame\Iterator\iter;
 use function Dgame\Iterator\keys;
+use function Dgame\Iterator\only;
 
 class IteratorTest extends TestCase
 {
@@ -23,6 +24,13 @@ class IteratorTest extends TestCase
         $this->assertTrue($it->next()->isSome());
         $this->assertTrue($it->next()->isSome());
         $this->assertFalse($it->isValid());
+    }
+
+    public function testOnly()
+    {
+        $it = only('a')->repeat(4);
+
+        $this->assertEquals('aaaa', $it->implode());
     }
 
     public function testChars()
