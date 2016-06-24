@@ -136,7 +136,7 @@ class IteratorTest extends TestCase
     {
         $it = iter([1, 2, 4, 2, 3, 2, 4, 5, 1, 2, 4])->group();
 
-        $this->assertEquals([[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]], $it->values()->collect());
+        $this->assertEquals([[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]], $it->collect());
 
         $it = iter(['a' => 0, 'b' => 1, 'c' => 0])->groupKeepKeys();
 
