@@ -81,6 +81,11 @@ function none() : None
     return None::Instance();
 }
 
+/**
+ * @param $value
+ *
+ * @return Optional
+ */
 function maybe($value) : Optional
 {
     if (Some::Verify($value)) {
