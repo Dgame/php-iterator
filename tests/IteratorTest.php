@@ -3,12 +3,10 @@
 require_once '../vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use function Dgame\Iterator\assoc;
 use function Dgame\Iterator\chain;
 use function Dgame\Iterator\chars;
 use function Dgame\Iterator\cycle;
 use function Dgame\Iterator\iter;
-use function Dgame\Iterator\keys;
 use function Dgame\Iterator\only;
 
 class IteratorTest extends TestCase
