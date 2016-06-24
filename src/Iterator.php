@@ -517,13 +517,3 @@ function chars(string $str) : Iterator
 {
     return new Iterator(str_split($str));
 }
-
-/**
- * @param array $data
- *
- * @return Iterator
- */
-function keys(array $data) : Iterator
-{
-    return new Iterator(array_keys($data));
-}
