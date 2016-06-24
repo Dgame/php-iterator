@@ -32,7 +32,35 @@ abstract class Optional
     /**
      * @return mixed
      */
-    abstract public function get();
+    abstract public function unwrap();
+
+    /**
+     * @param callable $callback
+     *
+     * @return Optional
+     */
+    abstract public function ensure(callable $callback) : Optional;
+
+    /**
+     * @param callable          $callback
+     * @param string|\Exception $exception
+     *
+     * @return Some
+     * @throws \Exception
+     */
+    final public function enforce(callable $callback, $exception) : Some
+    {
+        $result = $this->ensure($callback);
+        if ($result->isNone()) {
+            if ($exception instanceof \Exception) {
+                throw $exception;
+            }
+
+            throw new \Exception($exception);
+        }
+
+        return $result;
+    }
 }
 
 /**

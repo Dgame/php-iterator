@@ -106,11 +106,24 @@ final class Iterator
     public function group() : Iterator
     {
         $result = [];
-        foreach ($this->data as $value) {
+        foreach ($this->data as $key => $value) {
             $result[$value][] = $value;
         }
 
-        return new self($result);
+        return new self(array_values($result));
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function groupKeepKeys() : Iterator
+    {
+        $result = [];
+        foreach ($this->data as $key => $value) {
+            $result[$value][$key] = $value;
+        }
+
+        return new self(array_values($result));
     }
 
     /**
@@ -200,7 +213,7 @@ final class Iterator
     {
         $index = $this->indexOf($value);
         if ($index->isSome()) {
-            return $this->take($index->get());
+            return $this->take($index->unwrap());
         }
 
         return new self([]);
@@ -215,7 +228,7 @@ final class Iterator
     {
         $index = $this->indexOf($value);
         if ($index->isSome()) {
-            return $this->skip($index->get() + 1);
+            return $this->skip($index->unwrap() + 1);
         }
 
         return new self([]);
@@ -230,7 +243,7 @@ final class Iterator
     {
         $index = $this->indexOf($value);
         if ($index->isSome()) {
-            return $this->skip($index->get());
+            return $this->skip($index->unwrap());
         }
 
         return new self([]);
@@ -245,7 +258,7 @@ final class Iterator
     {
         $index = $this->indexOf($value);
         if ($index->isSome()) {
-            return $this->take($index->get() + 1);
+            return $this->take($index->unwrap() + 1);
         }
 
         return new self([]);
@@ -448,7 +461,7 @@ final class Iterator
     {
         $index = $this->indexOf($value);
         if ($index->isSome()) {
-            return maybe($this->data[$index->get()]);
+            return maybe($this->data[$index->unwrap()]);
         }
 
         return none();

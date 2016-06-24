@@ -14,7 +14,7 @@ class TestOptional extends TestCase
     {
         $some = some(42);
         $this->assertTrue($some->isSome());
-        $this->assertEquals(42, $some->get());
+        $this->assertEquals(42, $some->unwrap());
     }
 
     public function testNone()
@@ -30,7 +30,7 @@ class TestOptional extends TestCase
 
         $maybe = maybe(42);
         $this->assertTrue($maybe->isSome());
-        $this->assertEquals(42, $maybe->get());
+        $this->assertEquals(42, $maybe->unwrap());
     }
 
     public function testChain()
@@ -44,10 +44,28 @@ class TestOptional extends TestCase
         };
 
         $some = some($a);
-        $this->assertEquals(42, $some->get()->test());
+        $this->assertEquals(42, $some->unwrap()->test());
         $this->assertEquals(42, $some->assume()->test());
 
         $none = none();
         $this->assertSame(NullObject::Instance(), $none->assume()->test());
+    }
+
+    public function testEnsure()
+    {
+        $result = some(0)->ensure(function($value) {
+            return $value > 0;
+        });
+        $this->assertTrue($result->isNone());
+    }
+
+    public function testEnforce()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('None');
+
+        some(0)->enforce(function($value) {
+            return $value > 0;
+        }, new Exception('None'));
     }
 }

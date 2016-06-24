@@ -30,9 +30,9 @@ class IteratorTest extends TestCase
     {
         $it = iter(['a', 'b', false, null, 0, 1])->filterEmpty();
 
-        $this->assertEquals('a', $it->next()->get());
-        $this->assertEquals('b', $it->next()->get());
-        $this->assertEquals(1, $it->next()->get());
+        $this->assertEquals('a', $it->next()->unwrap());
+        $this->assertEquals('b', $it->next()->unwrap());
+        $this->assertEquals(1, $it->next()->unwrap());
         $this->assertFalse($it->isValid());
     }
 
@@ -47,12 +47,12 @@ class IteratorTest extends TestCase
     {
         $it = chars('Hallo');
 
-        $this->assertEquals('H', $it->current()->get());
-        $this->assertEquals('H', $it->next()->get());
-        $this->assertEquals('a', $it->next()->get());
-        $this->assertEquals('l', $it->next()->get());
-        $this->assertEquals('l', $it->next()->get());
-        $this->assertEquals('o', $it->next()->get());
+        $this->assertEquals('H', $it->current()->unwrap());
+        $this->assertEquals('H', $it->next()->unwrap());
+        $this->assertEquals('a', $it->next()->unwrap());
+        $this->assertEquals('l', $it->next()->unwrap());
+        $this->assertEquals('l', $it->next()->unwrap());
+        $this->assertEquals('o', $it->next()->unwrap());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -69,8 +69,8 @@ class IteratorTest extends TestCase
         $it = chars('Hallo');
         $it = $it->take(2);
 
-        $this->assertEquals('H', $it->next()->get());
-        $this->assertEquals('a', $it->next()->get());
+        $this->assertEquals('H', $it->next()->unwrap());
+        $this->assertEquals('a', $it->next()->unwrap());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -79,8 +79,8 @@ class IteratorTest extends TestCase
         $it = chars('Hallo');
         $it = $it->skip(3);
 
-        $this->assertEquals('l', $it->next()->get());
-        $this->assertEquals('o', $it->next()->get());
+        $this->assertEquals('l', $it->next()->unwrap());
+        $this->assertEquals('o', $it->next()->unwrap());
         $this->assertTrue($it->next()->isNone());
     }
 
@@ -138,9 +138,9 @@ class IteratorTest extends TestCase
 
         $this->assertEquals([[1, 1], [2, 2, 2, 2], [4, 4, 4], [3], [5]], $it->values()->collect());
 
-        $it = iter(['a' => 0, 'b' => 1, 'c' => 0])->group();
+        $it = iter(['a' => 0, 'b' => 1, 'c' => 0])->groupKeepKeys();
 
-        $this->assertEquals([[0, 0], [1]], $it->collect());
+        $this->assertEquals([['a' => 0, 'c' => 0], ['b' => 1]], $it->collect());
     }
 
     public function testFold()
@@ -217,31 +217,31 @@ class IteratorTest extends TestCase
     {
         $it = chars('Hal');
 
-        $this->assertEquals('H', $it->current()->get());
-        $this->assertEquals('a', $it->peek()->get());
-        $this->assertEquals('H', $it->current()->get());
+        $this->assertEquals('H', $it->current()->unwrap());
+        $this->assertEquals('a', $it->peek()->unwrap());
+        $this->assertEquals('H', $it->current()->unwrap());
 
-        $this->assertEquals('H', $it->next()->get());
-        $this->assertEquals('a', $it->current()->get());
-        $this->assertEquals('l', $it->peek()->get());
-        $this->assertEquals('a', $it->current()->get());
+        $this->assertEquals('H', $it->next()->unwrap());
+        $this->assertEquals('a', $it->current()->unwrap());
+        $this->assertEquals('l', $it->peek()->unwrap());
+        $this->assertEquals('a', $it->current()->unwrap());
     }
 
     public function testConsume()
     {
         $it = chars('Hal')->consume();
 
-        $this->assertEquals('H', $it->popFront()->get());
+        $this->assertEquals('H', $it->popFront()->unwrap());
 
-        $this->assertEquals('a', $it->front()->get());
-        $this->assertEquals('a', $it->front()->get());
+        $this->assertEquals('a', $it->front()->unwrap());
+        $this->assertEquals('a', $it->front()->unwrap());
 
-        $this->assertEquals('l', $it->popBack()->get());
+        $this->assertEquals('l', $it->popBack()->unwrap());
 
-        $this->assertEquals('a', $it->back()->get());
-        $this->assertEquals('a', $it->front()->get());
+        $this->assertEquals('a', $it->back()->unwrap());
+        $this->assertEquals('a', $it->front()->unwrap());
 
-        $this->assertEquals('a', $it->popFront()->get());
+        $this->assertEquals('a', $it->popFront()->unwrap());
 
         $this->assertTrue($it->front()->isNone());
         $this->assertTrue($it->back()->isNone());
@@ -309,7 +309,7 @@ class IteratorTest extends TestCase
         $result = $it->find('a');
 
         $this->assertTrue($result->isSome());
-        $this->assertEquals('a', $result->get());
+        $this->assertEquals('a', $result->unwrap());
         $this->assertTrue($it->find('z')->isNone());
     }
 
@@ -320,7 +320,7 @@ class IteratorTest extends TestCase
         $result = $it->indexOf('b');
 
         $this->assertTrue($result->isSome());
-        $this->assertEquals(1, $result->get());
+        $this->assertEquals(1, $result->unwrap());
         $this->assertTrue($it->indexOf('z')->isNone());
     }
 

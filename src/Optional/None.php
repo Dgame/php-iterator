@@ -51,9 +51,19 @@ final class None extends Optional
     /**
      * @throws \Exception
      */
-    public function get()
+    public function unwrap()
     {
         throw new \Exception('No value');
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return Optional
+     */
+    public function ensure(callable $callback) : Optional
+    {
+        return $this;
     }
 
     /**

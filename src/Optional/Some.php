@@ -50,15 +50,29 @@ final class Some extends Optional
      */
     public function assume()
     {
-        return $this->get();
+        return $this->unwrap();
     }
 
     /**
      * @return mixed
      */
-    public function get()
+    public function unwrap()
     {
         return $this->value;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return Optional
+     */
+    public function ensure(callable $callback) : Optional
+    {
+        if ($callback($this->value)) {
+            return $this;
+        }
+
+        return None::Instance();
     }
 
     /**
