@@ -211,7 +211,7 @@ final class Iterator
      */
     public function before($value) : Iterator
     {
-        $index = $this->keyOf($value);
+        $index = $this->firstKeyOf($value);
         if ($index->isSome()) {
             return $this->take($index->unwrap());
         }
@@ -226,7 +226,7 @@ final class Iterator
      */
     public function after($value) : Iterator
     {
-        $index = $this->keyOf($value);
+        $index = $this->firstKeyOf($value);
         if ($index->isSome()) {
             return $this->skip($index->unwrap() + 1);
         }
@@ -241,7 +241,7 @@ final class Iterator
      */
     public function from($value) : Iterator
     {
-        $index = $this->keyOf($value);
+        $index = $this->firstKeyOf($value);
         if ($index->isSome()) {
             return $this->skip($index->unwrap());
         }
@@ -256,7 +256,7 @@ final class Iterator
      */
     public function until($value) : Iterator
     {
-        $index = $this->keyOf($value);
+        $index = $this->firstKeyOf($value);
         if ($index->isSome()) {
             return $this->take($index->unwrap() + 1);
         }
@@ -473,7 +473,7 @@ final class Iterator
      */
     public function find($value) : Optional
     {
-        $key = $this->keyOf($value);
+        $key = $this->firstKeyOf($value);
         if ($key->isSome()) {
             return maybe($this->data[$key->unwrap()]);
         }
@@ -486,7 +486,7 @@ final class Iterator
      *
      * @return Optional
      */
-    public function keyOf($value) : Optional
+    public function firstKeyOf($value) : Optional
     {
         $index = array_search($value, $this->data);
         if ($index === false) {
@@ -494,6 +494,16 @@ final class Iterator
         }
 
         return some($index);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function allKeysOf($value) : Iterator
+    {
+        return new self(array_keys($this->data, $value));
     }
 }
 

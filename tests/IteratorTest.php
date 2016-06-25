@@ -300,14 +300,21 @@ class IteratorTest extends TestCase
         $this->assertEquals(1, $it->min());
     }
 
-    public function testAt()
+    public function testAccess()
     {
         $it = iter(['a' => 'foo', 'b' => 'bar']);
 
-        $this->assertEquals('b', $it->keyOf('bar')->unwrap());
+        $this->assertEquals('b', $it->firstKeyOf('bar')->unwrap());
         $this->assertTrue($it->find('bar')->isSome());
         $this->assertEquals('bar', $it->find('bar')->unwrap());
         $this->assertEquals('bar', $it->at('b')->unwrap());
+
+        $it = chars('Foo');
+
+        $this->assertEquals(1, $it->firstKeyOf('o')->unwrap());
+        $this->assertTrue($it->find('F')->isSome());
+        $this->assertEquals('F', $it->find('F')->unwrap());
+        $this->assertEquals('o', $it->at(1)->unwrap());
     }
 
     public function testFind()
@@ -321,15 +328,22 @@ class IteratorTest extends TestCase
         $this->assertTrue($it->find('z')->isNone());
     }
 
-    public function testIndexOf()
+    public function testAllKeysOf()
+    {
+        $it = chars('Foo');
+
+        $this->assertEquals([1, 2], $it->allKeysOf('o')->collect());
+    }
+
+    public function testKeyOf()
     {
         $it = iter(['a', 'b', 'c']);
 
-        $result = $it->keyOf('b');
+        $result = $it->firstKeyOf('b');
 
         $this->assertTrue($result->isSome());
         $this->assertEquals(1, $result->unwrap());
-        $this->assertTrue($it->keyOf('z')->isNone());
+        $this->assertTrue($it->firstKeyOf('z')->isNone());
     }
 
     public function testAmount()
