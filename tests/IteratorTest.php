@@ -300,6 +300,16 @@ class IteratorTest extends TestCase
         $this->assertEquals(1, $it->min());
     }
 
+    public function testAt()
+    {
+        $it = iter(['a' => 'foo', 'b' => 'bar']);
+
+        $this->assertEquals('b', $it->keyOf('bar')->unwrap());
+        $this->assertTrue($it->find('bar')->isSome());
+        $this->assertEquals('bar', $it->find('bar')->unwrap());
+        $this->assertEquals('bar', $it->at('b')->unwrap());
+    }
+
     public function testFind()
     {
         $it = iter(['a', 'b', 'c']);
@@ -315,11 +325,11 @@ class IteratorTest extends TestCase
     {
         $it = iter(['a', 'b', 'c']);
 
-        $result = $it->indexOf('b');
+        $result = $it->keyOf('b');
 
         $this->assertTrue($result->isSome());
         $this->assertEquals(1, $result->unwrap());
-        $this->assertTrue($it->indexOf('z')->isNone());
+        $this->assertTrue($it->keyOf('z')->isNone());
     }
 
     public function testAmount()

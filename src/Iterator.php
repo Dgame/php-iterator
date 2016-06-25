@@ -211,7 +211,7 @@ final class Iterator
      */
     public function before($value) : Iterator
     {
-        $index = $this->indexOf($value);
+        $index = $this->keyOf($value);
         if ($index->isSome()) {
             return $this->take($index->unwrap());
         }
@@ -226,7 +226,7 @@ final class Iterator
      */
     public function after($value) : Iterator
     {
-        $index = $this->indexOf($value);
+        $index = $this->keyOf($value);
         if ($index->isSome()) {
             return $this->skip($index->unwrap() + 1);
         }
@@ -241,7 +241,7 @@ final class Iterator
      */
     public function from($value) : Iterator
     {
-        $index = $this->indexOf($value);
+        $index = $this->keyOf($value);
         if ($index->isSome()) {
             return $this->skip($index->unwrap());
         }
@@ -256,7 +256,7 @@ final class Iterator
      */
     public function until($value) : Iterator
     {
-        $index = $this->indexOf($value);
+        $index = $this->keyOf($value);
         if ($index->isSome()) {
             return $this->take($index->unwrap() + 1);
         }
@@ -453,15 +453,14 @@ final class Iterator
     }
 
     /**
-     * @param $value
+     * @param $key
      *
      * @return Optional
      */
-    public function find($value) : Optional
+    public function at($key) : Optional
     {
-        $index = $this->indexOf($value);
-        if ($index->isSome()) {
-            return maybe($this->data[$index->unwrap()]);
+        if (array_key_exists($key, $this->data)) {
+            return maybe($this->data[$key]);
         }
 
         return none();
@@ -472,7 +471,22 @@ final class Iterator
      *
      * @return Optional
      */
-    public function indexOf($value) : Optional
+    public function find($value) : Optional
+    {
+        $key = $this->keyOf($value);
+        if ($key->isSome()) {
+            return maybe($this->data[$key->unwrap()]);
+        }
+
+        return none();
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Optional
+     */
+    public function keyOf($value) : Optional
     {
         $index = array_search($value, $this->data);
         if ($index === false) {
