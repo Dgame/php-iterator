@@ -38,10 +38,16 @@ final class Some extends Optional
     }
 
     /**
+     * @param null|mixed $some
+     *
      * @return bool
      */
-    public function isSome() : bool
+    public function isSome(&$some = null) : bool
     {
+        if (func_num_args() !== 0) {
+            $some = $this->value;
+        }
+
         return true;
     }
 

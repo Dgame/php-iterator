@@ -17,10 +17,27 @@ class TestOptional extends TestCase
         $this->assertEquals(42, $some->unwrap());
     }
 
+    public function testSomeByRef()
+    {
+        $some = some(42);
+        $this->assertTrue($some->isSome($value));
+        $this->assertFalse($some->isNone());
+        $this->assertEquals(42, $value);
+    }
+
     public function testNone()
     {
         $none = none();
         $this->assertTrue($none->isNone());
+        $this->assertFalse($none->isSome());
+    }
+
+    public function testNoneByRef()
+    {
+        $none = none();
+        $this->assertTrue($none->isNone());
+        $this->assertFalse($none->isSome($value));
+        $this->assertNull($value);
     }
 
     public function testMaybe()
