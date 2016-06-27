@@ -187,12 +187,28 @@ class IteratorTest extends TestCase
         $this->assertEquals('ab', $it->implode());
     }
 
+    public function testBeforeAssoc()
+    {
+        $it = iter(['a' => 'z', 'b' => 'y', 'c' => 'x', 'd' => 'w']);
+        $it = $it->before('x');
+
+        $this->assertEquals(['a' => 'z', 'b' => 'y'], $it->collect());
+    }
+
     public function testAfter()
     {
         $it = chars("abcdef");
         $it = $it->after('d');
 
         $this->assertEquals('ef', $it->implode());
+    }
+
+    public function testAfterAssoc()
+    {
+        $it = iter(['a' => 'z', 'b' => 'y', 'c' => 'x', 'd' => 'w']);
+        $it = $it->after('x');
+
+        $this->assertEquals(['d' => 'w'], $it->collect());
     }
 
     public function testFrom()
@@ -203,12 +219,28 @@ class IteratorTest extends TestCase
         $this->assertEquals('def', $it->implode());
     }
 
+    public function testFromAssoc()
+    {
+        $it = iter(['a' => 'z', 'b' => 'y', 'c' => 'x', 'd' => 'w']);
+        $it = $it->from('x');
+
+        $this->assertEquals(['c' => 'x', 'd' => 'w'], $it->collect());
+    }
+
     public function testUntil()
     {
         $it = chars("abcdef");
         $it = $it->until('c');
 
         $this->assertEquals('abc', $it->implode());
+    }
+
+    public function testUntilAssoc()
+    {
+        $it = iter(['a' => 'z', 'b' => 'y', 'c' => 'x', 'd' => 'w']);
+        $it = $it->until('x');
+
+        $this->assertEquals(['a' => 'z', 'b' => 'y', 'c' => 'x'], $it->collect());
     }
 
     public function testPeekNext()
@@ -344,6 +376,17 @@ class IteratorTest extends TestCase
         $this->assertTrue($result->isSome());
         $this->assertEquals(1, $result->unwrap());
         $this->assertTrue($it->firstKeyOf('z')->isNone());
+    }
+
+    public function testKeyOfAssoc()
+    {
+        $it = iter(['a' => 'z', 'b' => 'y', 'c' => 'x']);
+
+        $result = $it->firstKeyOf('y');
+
+        $this->assertTrue($result->isSome());
+        $this->assertEquals('b', $result->unwrap());
+        $this->assertTrue($it->firstKeyOf('a')->isNone());
     }
 
     public function testAmount()

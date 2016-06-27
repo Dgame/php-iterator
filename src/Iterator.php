@@ -211,9 +211,9 @@ final class Iterator
      */
     public function before($value) : Iterator
     {
-        $index = $this->firstKeyOf($value);
+        $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
-            return $this->take($n); // TODO: sicherstellen, dass $n ein int ist
+            return $this->take($n);
         }
 
         return new self([]);
@@ -226,7 +226,7 @@ final class Iterator
      */
     public function after($value) : Iterator
     {
-        $index = $this->firstKeyOf($value);
+        $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
             return $this->skip($n + 1); // TODO: sicherstellen, dass $n ein int ist
         }
@@ -241,7 +241,7 @@ final class Iterator
      */
     public function from($value) : Iterator
     {
-        $index = $this->firstKeyOf($value);
+        $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
             return $this->skip($n); // TODO: sicherstellen, dass $n ein int ist
         }
@@ -256,7 +256,7 @@ final class Iterator
      */
     public function until($value) : Iterator
     {
-        $index = $this->firstKeyOf($value);
+        $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
             return $this->take($n + 1); // TODO: sicherstellen, dass $n ein int ist
         }
@@ -273,6 +273,80 @@ final class Iterator
     public function fold(callable $callback, $initial = null)
     {
         return array_reduce($this->data, $callback, $initial);
+    }
+
+    /**
+     * @param $key
+     *
+     * @return Optional
+     */
+    public function at($key) : Optional
+    {
+        if (array_key_exists($key, $this->data)) {
+            return maybe($this->data[$key]);
+        }
+
+        return none();
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Optional
+     */
+    public function find($value) : Optional
+    {
+        $result = $this->firstKeyOf($value);
+        if ($result->isSome($key)) {
+            return maybe($this->data[$key]);
+        }
+
+        return none();
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Optional
+     */
+    public function firstIndexOf($value) : Optional
+    {
+        return $this->values()->firstKeyOf($value);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Optional
+     */
+    public function firstKeyOf($value) : Optional
+    {
+        $key = array_search($value, $this->data);
+        if ($key === false) {
+            return none();
+        }
+
+        return some($key);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function allIndicesOf($value) : Iterator
+    {
+        return $this->values()->allKeysOf($value);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function allKeysOf($value) : Iterator
+    {
+        return new self(array_keys($this->data, $value));
     }
 
     /**
@@ -450,60 +524,6 @@ final class Iterator
     public function isValid() : bool
     {
         return key($this->data) !== null;
-    }
-
-    /**
-     * @param $key
-     *
-     * @return Optional
-     */
-    public function at($key) : Optional
-    {
-        if (array_key_exists($key, $this->data)) {
-            return maybe($this->data[$key]);
-        }
-
-        return none();
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Optional
-     */
-    public function find($value) : Optional
-    {
-        $result = $this->firstKeyOf($value);
-        if ($result->isSome($key)) {
-            return maybe($this->data[$key]);
-        }
-
-        return none();
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Optional
-     */
-    public function firstKeyOf($value) : Optional
-    {
-        $index = array_search($value, $this->data);
-        if ($index === false) {
-            return none();
-        }
-
-        return some($index);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Iterator
-     */
-    public function allKeysOf($value) : Iterator
-    {
-        return new self(array_keys($this->data, $value));
     }
 }
 
