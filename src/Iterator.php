@@ -41,10 +41,16 @@ final class Iterator
     }
 
     /**
+     * @param string|null $glue
+     *
      * @return string
      */
-    public function implode(string $glue = '') : string
+    public function implode(string $glue = null) : string
     {
+        if ($glue === null) {
+            return implode($this->data);
+        }
+
         return implode($glue, $this->data);
     }
 
@@ -124,6 +130,17 @@ final class Iterator
         }
 
         return new self(array_values($result));
+    }
+
+    /**
+     * @param      $column_key
+     * @param null $index_key
+     *
+     * @return Iterator
+     */
+    public function extractBykey($column_key, $index_key = null) : Iterator
+    {
+        return new self(array_column($this->data, $column_key, $index_key));
     }
 
     /**
@@ -434,6 +451,14 @@ final class Iterator
         }
 
         return $this->length;
+    }
+
+    /**
+     * @return array
+     */
+    public function countOccurrences() : array
+    {
+        return array_count_values($this->data);
     }
 
     /**

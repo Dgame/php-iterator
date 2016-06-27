@@ -148,6 +148,47 @@ class IteratorTest extends TestCase
         $this->assertEquals([['a' => 0, 'c' => 0], ['b' => 1]], $it->collect());
     }
 
+    public function testExtract()
+    {
+        $records = [
+            [
+                'id'         => 2135,
+                'first_name' => 'John',
+                'last_name'  => 'Doe',
+            ],
+            [
+                'id'         => 3245,
+                'first_name' => 'Sally',
+                'last_name'  => 'Smith',
+            ],
+            [
+                'id'         => 5342,
+                'first_name' => 'Jane',
+                'last_name'  => 'Jones',
+            ],
+            [
+                'id'         => 5623,
+                'first_name' => 'Peter',
+                'last_name'  => 'Doe',
+            ]
+        ];
+
+        $it = iter($records);
+
+        $this->assertEquals(['John', 'Sally', 'Jane', 'Peter'], $it->extractBykey('first_name')->collect());
+        $this->assertEquals(
+            [2135 => 'Doe', 3245 => 'Smith', 5342 => 'Jones', 5623 => 'Doe'],
+            $it->extractBykey('last_name', 'id')->collect()
+        );
+    }
+
+    public function testCountOccurences()
+    {
+        $it = iter([1, 'hello', 1, 'world', 'hello']);
+
+        $this->assertEquals([1 => 2, 'hello' => 2, 'world' => 1], $it->countOccurrences());
+    }
+
     public function testFold()
     {
         $it = iter([6, 7, 8]);
