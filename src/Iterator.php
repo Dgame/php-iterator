@@ -138,7 +138,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function extractBykey($column_key, $index_key = null) : Iterator
+    public function extractByKey($column_key, $index_key = null) : Iterator
     {
         return new self(array_column($this->data, $column_key, $index_key));
     }

@@ -175,10 +175,10 @@ class IteratorTest extends TestCase
 
         $it = iter($records);
 
-        $this->assertEquals(['John', 'Sally', 'Jane', 'Peter'], $it->extractBykey('first_name')->collect());
+        $this->assertEquals(['John', 'Sally', 'Jane', 'Peter'], $it->extractByKey('first_name')->collect());
         $this->assertEquals(
             [2135 => 'Doe', 3245 => 'Smith', 5342 => 'Jones', 5623 => 'Doe'],
-            $it->extractBykey('last_name', 'id')->collect()
+            $it->extractByKey('last_name', 'id')->collect()
         );
     }
 
