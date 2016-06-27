@@ -258,8 +258,7 @@ final class Iterator
      */
     public function before($value) : Iterator
     {
-        $index = $this->firstIndexOf($value);
-        if ($index->isSome($n)) {
+        if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->take($n);
         }
 
@@ -273,8 +272,7 @@ final class Iterator
      */
     public function after($value) : Iterator
     {
-        $index = $this->firstIndexOf($value);
-        if ($index->isSome($n)) {
+        if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->skip($n + 1);
         }
 
@@ -288,8 +286,7 @@ final class Iterator
      */
     public function from($value) : Iterator
     {
-        $index = $this->firstIndexOf($value);
-        if ($index->isSome($n)) {
+        if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->skip($n);
         }
 
@@ -303,8 +300,7 @@ final class Iterator
      */
     public function until($value) : Iterator
     {
-        $index = $this->firstIndexOf($value);
-        if ($index->isSome($n)) {
+        if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->take($n + 1);
         }
 
@@ -343,8 +339,7 @@ final class Iterator
      */
     public function find($value) : Optional
     {
-        $result = $this->firstKeyOf($value);
-        if ($result->isSome($key)) {
+        if ($this->firstKeyOf($value)->isSome($key)) {
             return maybe($this->data[$key]);
         }
 
