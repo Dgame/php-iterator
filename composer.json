@@ -14,7 +14,8 @@
         "php": ">=7.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "5.*.*"
+        "phpunit/phpunit": "5.*.*",
+        "dgame/php-optional": "*"
     },
     "autoload": {
         "classmap": [
@@ -23,11 +24,10 @@
         "files": [
             "src/Iterator.php",
             "src/Cycle.php",
-            "src/Only.php",
-            "src/Optional/Optional.php"
+            "src/Only.php"
         ],
         "psr-4": {
-            "Dgame\\Range\\": "src/"
+            "Dgame\\Iterator\\": "src/"
         }
     }
 }

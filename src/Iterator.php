@@ -212,8 +212,8 @@ final class Iterator
     public function before($value) : Iterator
     {
         $index = $this->firstKeyOf($value);
-        if ($index->isSome()) {
-            return $this->take($index->unwrap());
+        if ($index->isSome($n)) {
+            return $this->take($n); // TODO: sicherstellen, dass $n ein int ist
         }
 
         return new self([]);
@@ -227,8 +227,8 @@ final class Iterator
     public function after($value) : Iterator
     {
         $index = $this->firstKeyOf($value);
-        if ($index->isSome()) {
-            return $this->skip($index->unwrap() + 1);
+        if ($index->isSome($n)) {
+            return $this->skip($n + 1); // TODO: sicherstellen, dass $n ein int ist
         }
 
         return new self([]);
@@ -242,8 +242,8 @@ final class Iterator
     public function from($value) : Iterator
     {
         $index = $this->firstKeyOf($value);
-        if ($index->isSome()) {
-            return $this->skip($index->unwrap());
+        if ($index->isSome($n)) {
+            return $this->skip($n); // TODO: sicherstellen, dass $n ein int ist
         }
 
         return new self([]);
@@ -257,8 +257,8 @@ final class Iterator
     public function until($value) : Iterator
     {
         $index = $this->firstKeyOf($value);
-        if ($index->isSome()) {
-            return $this->take($index->unwrap() + 1);
+        if ($index->isSome($n)) {
+            return $this->take($n + 1); // TODO: sicherstellen, dass $n ein int ist
         }
 
         return new self([]);
@@ -473,9 +473,9 @@ final class Iterator
      */
     public function find($value) : Optional
     {
-        $key = $this->firstKeyOf($value);
-        if ($key->isSome()) {
-            return maybe($this->data[$key->unwrap()]);
+        $result = $this->firstKeyOf($value);
+        if ($result->isSome($key)) {
+            return maybe($this->data[$key]);
         }
 
         return none();
