@@ -89,7 +89,7 @@ final class Iterator
      */
     public function filter(callable $callback) : Iterator
     {
-        return new self(array_filter($this->data, $callback));
+        return new self(array_filter($this->data, $callback, ARRAY_FILTER_USE_BOTH));
     }
 
     /**
@@ -152,6 +152,17 @@ final class Iterator
     public function skip(int $n) : Iterator
     {
         return new self(array_slice($this->data, $n));
+    }
+
+    /**
+     * @param int $offset
+     * @param int $length
+     *
+     * @return Iterator
+     */
+    public function slice(int $offset, int $length) : Iterator
+    {
+        return new self(array_slice($this->data, $offset, $length));
     }
 
     /**
@@ -228,7 +239,7 @@ final class Iterator
     {
         $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
-            return $this->skip($n + 1); // TODO: sicherstellen, dass $n ein int ist
+            return $this->skip($n + 1);
         }
 
         return new self([]);
@@ -243,7 +254,7 @@ final class Iterator
     {
         $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
-            return $this->skip($n); // TODO: sicherstellen, dass $n ein int ist
+            return $this->skip($n);
         }
 
         return new self([]);
@@ -258,7 +269,7 @@ final class Iterator
     {
         $index = $this->firstIndexOf($value);
         if ($index->isSome($n)) {
-            return $this->take($n + 1); // TODO: sicherstellen, dass $n ein int ist
+            return $this->take($n + 1);
         }
 
         return new self([]);

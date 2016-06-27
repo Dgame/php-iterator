@@ -123,6 +123,13 @@ class IteratorTest extends TestCase
         $this->assertEquals(['age' => 42], $it->collect());
     }
 
+    public function testSlice()
+    {
+        $it = chars('FooBarQuatz')->slice(2, 4);
+
+        $this->assertEquals('oBar', $it->implode());
+    }
+
     public function testChunks()
     {
         $it = chars('FooBar')->chunks(2);
