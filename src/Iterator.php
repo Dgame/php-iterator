@@ -233,6 +233,25 @@ final class Iterator
     }
 
     /**
+     * @param $left
+     * @param $right
+     *
+     * @return Iterator
+     */
+    public function between($left, $right) : Iterator
+    {
+        if ($this->firstIndexOf($left)->isSome($offset)) {
+            if ($this->firstIndexOf($right)->isSome($range)) {
+                return $this->slice($offset + 1, $range - $offset - 1);
+            }
+
+            return $this->skip($offset + 1);
+        }
+
+        return new self([]);
+    }
+
+    /**
      * @param $value
      *
      * @return Iterator

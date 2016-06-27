@@ -227,6 +227,54 @@ class IteratorTest extends TestCase
         $this->assertEquals([10, 20], $it->skipWhile($belowTen)->collect());
     }
 
+    public function testBetweenRange()
+    {
+        $it = iter([0, 1, 2, 10, 20, 30, 40]);
+
+        $this->assertEquals([2, 10, 20], $it->between(1, 30)->collect());
+
+        $it = iter(['a' => 'b', 'c' => 'd', 'e' => 'f']);
+
+        $this->assertEquals(['c' => 'd'], $it->between('b', 'f')->collect());
+
+        $it = chars('FooBar');
+
+        $this->assertEquals('ooB', $it->between('F', 'a')->implode());
+    }
+
+    public function testFalseBetween()
+    {
+        $it = iter([0, 1, 2, 10, 20, 30, 40]);
+
+        $this->assertEmpty($it->between(20, 1)->collect());
+
+        $it = iter(['a' => 'b', 'c' => 'd', 'e' => 'f']);
+
+        $this->assertEmpty($it->between('f', 'b')->collect());
+
+        $it = chars('FooBar');
+
+        $this->assertEmpty($it->between('a', 'F')->implode());
+    }
+
+    public function testBetween()
+    {
+        $it = iter([0, 1, 2, 10, 20]);
+
+        $this->assertEquals([2, 10, 20], $it->between(1, 30)->collect());
+
+        $it = iter(['a' => 'b', 'c' => 'd']);
+
+        $this->assertEquals(['c' => 'd'], $it->between('b', 'f')->collect());
+
+        $it = chars('FooBa');
+
+        $this->assertEquals('ooB', $it->between('F', 'a')->implode());
+
+        $it = chars('Hallo');
+        $this->assertEmpty($it->between('f', 'x')->implode());
+    }
+
     public function testBefore()
     {
         $it = chars("abcdef");
