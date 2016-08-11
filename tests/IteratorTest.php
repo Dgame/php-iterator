@@ -277,7 +277,7 @@ class IteratorTest extends TestCase
 
     public function testBefore()
     {
-        $it = chars("abcdef");
+        $it = chars('abcdef');
         $it = $it->before('c');
 
         $this->assertEquals('ab', $it->implode());
@@ -293,7 +293,7 @@ class IteratorTest extends TestCase
 
     public function testAfter()
     {
-        $it = chars("abcdef");
+        $it = chars('abcdef');
         $it = $it->after('d');
 
         $this->assertEquals('ef', $it->implode());
@@ -309,7 +309,7 @@ class IteratorTest extends TestCase
 
     public function testFrom()
     {
-        $it = chars("abcdef");
+        $it = chars('abcdef');
         $it = $it->from('d');
 
         $this->assertEquals('def', $it->implode());
@@ -325,7 +325,7 @@ class IteratorTest extends TestCase
 
     public function testUntil()
     {
-        $it = chars("abcdef");
+        $it = chars('abcdef');
         $it = $it->until('c');
 
         $this->assertEquals('abc', $it->implode());
