@@ -4,6 +4,14 @@
     "license": "MIT",
     "type": "library",
     "homepage": "https://github.com/php-iterator",
+    "keywords": [
+        "Iterator",
+        "Array",
+        "Traversable",
+        "Filter",
+        "High Order Functions",
+        "Functional"
+    ],
     "authors": [
         {
             "name": "Randy Schütt",
