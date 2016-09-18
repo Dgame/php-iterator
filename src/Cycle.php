@@ -28,7 +28,7 @@ final class Cycle
      *
      * @return Iterator
      */
-    public function take(int $n) : Iterator
+    public function take(int $n): Iterator
     {
         $data = [];
         for ($i = 0; $i < $n; $i++) {
@@ -37,14 +37,4 @@ final class Cycle
 
         return chain(...$data);
     }
-}
-
-/**
- * @param array $data
- *
- * @return Cycle
- */
-function cycle(array $data) : Cycle
-{
-    return new Cycle($data);
 }

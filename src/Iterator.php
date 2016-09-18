@@ -18,9 +18,9 @@ final class Iterator
      */
     private $data = [];
     /**
-     * @var ?int
+     * @var int
      */
-    private $length = null;
+    private $index = 0;
 
     /**
      * Iterator constructor.
@@ -33,9 +33,17 @@ final class Iterator
     }
 
     /**
+     * @return int
+     */
+    public function getIndex(): int
+    {
+        return $this->index;
+    }
+
+    /**
      * @return array
      */
-    public function collect() : array
+    public function collect(): array
     {
         return $this->data;
     }
@@ -45,7 +53,7 @@ final class Iterator
      *
      * @return string
      */
-    public function implode(string $glue = null) : string
+    public function implode(string $glue = null): string
     {
         if ($glue === null) {
             return implode($this->data);
@@ -57,7 +65,7 @@ final class Iterator
     /**
      * @return Consume
      */
-    public function consume() : Consume
+    public function consume(): Consume
     {
         return new Consume($this);
     }
@@ -65,7 +73,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function values() : Iterator
+    public function values(): Iterator
     {
         return new self(array_values($this->data));
     }
@@ -73,7 +81,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function keys() : Iterator
+    public function keys(): Iterator
     {
         return new self(array_keys($this->data));
     }
@@ -83,7 +91,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function map(callable $callback) : Iterator
+    public function map(callable $callback): Iterator
     {
         return new self(array_map($callback, $this->data));
     }
@@ -93,7 +101,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function filter(callable $callback) : Iterator
+    public function filter(callable $callback): Iterator
     {
         return new self(array_filter($this->data, $callback, ARRAY_FILTER_USE_BOTH));
     }
@@ -101,7 +109,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function filterEmpty() : Iterator
+    public function filterEmpty(): Iterator
     {
         return new self(array_filter($this->data));
     }
@@ -109,7 +117,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function group() : Iterator
+    public function group(): Iterator
     {
         $result = [];
         foreach ($this->data as $key => $value) {
@@ -122,7 +130,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function groupKeepKeys() : Iterator
+    public function groupKeepKeys(): Iterator
     {
         $result = [];
         foreach ($this->data as $key => $value) {
@@ -138,7 +146,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function extractByKey($column_key, $index_key = null) : Iterator
+    public function extractByKey($column_key, $index_key = null): Iterator
     {
         return new self(array_column($this->data, $column_key, $index_key));
     }
@@ -146,7 +154,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function unique() : Iterator
+    public function unique(): Iterator
     {
         return new self(array_unique($this->data));
     }
@@ -156,7 +164,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function take(int $n) : Iterator
+    public function take(int $n): Iterator
     {
         return new self(array_slice($this->data, 0, $n));
     }
@@ -166,7 +174,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function skip(int $n) : Iterator
+    public function skip(int $n): Iterator
     {
         return new self(array_slice($this->data, $n));
     }
@@ -177,7 +185,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function slice(int $offset, int $length) : Iterator
+    public function slice(int $offset, int $length): Iterator
     {
         return new self(array_slice($this->data, $offset, $length));
     }
@@ -187,7 +195,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function chunks(int $size) : Iterator
+    public function chunks(int $size): Iterator
     {
         $chunks = array_chunk($this->data, $size);
 
@@ -199,7 +207,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function takeWhile(callable $callback) : Iterator
+    public function takeWhile(callable $callback): Iterator
     {
         $n = 0;
         foreach ($this->data as $value) {
@@ -218,7 +226,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function skipWhile(callable $callback) : Iterator
+    public function skipWhile(callable $callback): Iterator
     {
         $n = 0;
         foreach ($this->data as $value) {
@@ -238,7 +246,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function between($left, $right) : Iterator
+    public function between($left, $right): Iterator
     {
         if ($this->firstIndexOf($left)->isSome($offset)) {
             if ($this->firstIndexOf($right)->isSome($range)) {
@@ -256,7 +264,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function before($value) : Iterator
+    public function before($value): Iterator
     {
         if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->take($n);
@@ -270,7 +278,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function after($value) : Iterator
+    public function after($value): Iterator
     {
         if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->skip($n + 1);
@@ -284,7 +292,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function from($value) : Iterator
+    public function from($value): Iterator
     {
         if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->skip($n);
@@ -298,7 +306,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function until($value) : Iterator
+    public function until($value): Iterator
     {
         if ($this->firstIndexOf($value)->isSome($n)) {
             return $this->take($n + 1);
@@ -323,7 +331,7 @@ final class Iterator
      *
      * @return Optional
      */
-    public function at($key) : Optional
+    public function at($key): Optional
     {
         if (array_key_exists($key, $this->data)) {
             return maybe($this->data[$key]);
@@ -337,7 +345,7 @@ final class Iterator
      *
      * @return Optional
      */
-    public function find($value) : Optional
+    public function find($value): Optional
     {
         if ($this->firstKeyOf($value)->isSome($key)) {
             return maybe($this->data[$key]);
@@ -347,11 +355,28 @@ final class Iterator
     }
 
     /**
+     * @param callable $callback
+     *
+     * @return array
+     */
+    public function findBy(callable $callback): array
+    {
+        $results = [];
+        foreach ($this->data as $key => $value) {
+            if ($callback($value, $key)) {
+                $results[$key] = $value;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
      * @param $value
      *
      * @return Optional
      */
-    public function firstIndexOf($value) : Optional
+    public function firstIndexOf($value): Optional
     {
         return $this->values()->firstKeyOf($value);
     }
@@ -361,7 +386,7 @@ final class Iterator
      *
      * @return Optional
      */
-    public function firstKeyOf($value) : Optional
+    public function firstKeyOf($value): Optional
     {
         $key = array_search($value, $this->data);
         if ($key === false) {
@@ -376,7 +401,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function allIndicesOf($value) : Iterator
+    public function allIndicesOf($value): Iterator
     {
         return $this->values()->allKeysOf($value);
     }
@@ -386,7 +411,7 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function allKeysOf($value) : Iterator
+    public function allKeysOf($value): Iterator
     {
         return new self(array_keys($this->data, $value));
     }
@@ -396,7 +421,7 @@ final class Iterator
      *
      * @return bool
      */
-    public function all(callable $callback) : bool
+    public function all(callable $callback): bool
     {
         foreach ($this->data as $value) {
             if (!$callback($value)) {
@@ -412,7 +437,7 @@ final class Iterator
      *
      * @return bool
      */
-    public function any(callable $callback) : bool
+    public function any(callable $callback): bool
     {
         foreach ($this->data as $value) {
             if ($callback($value)) {
@@ -426,7 +451,7 @@ final class Iterator
     /**
      * @return float
      */
-    public function sum() : float
+    public function sum(): float
     {
         return array_sum($this->data);
     }
@@ -434,7 +459,7 @@ final class Iterator
     /**
      * @return float
      */
-    public function product() : float
+    public function product(): float
     {
         return array_product($this->data);
     }
@@ -458,19 +483,15 @@ final class Iterator
     /**
      * @return int
      */
-    public function length() : int
+    public function length(): int
     {
-        if ($this->length === null) {
-            $this->length = count($this->data);
-        }
-
-        return $this->length;
+        return count($this->data);
     }
 
     /**
      * @return array
      */
-    public function countOccurrences() : array
+    public function countOccurrences(): array
     {
         return array_count_values($this->data);
     }
@@ -478,7 +499,7 @@ final class Iterator
     /**
      * @return float
      */
-    public function average() : float
+    public function average(): float
     {
         return $this->sum() / $this->length();
     }
@@ -486,7 +507,7 @@ final class Iterator
     /**
      * @return Iterator
      */
-    public function reverse() : Iterator
+    public function reverse(): Iterator
     {
         return new self(array_reverse($this->data));
     }
@@ -494,7 +515,7 @@ final class Iterator
     /**
      * @return Optional
      */
-    public function key() : Optional
+    public function key(): Optional
     {
         return maybe(key($this->data));
     }
@@ -502,46 +523,10 @@ final class Iterator
     /**
      * @return Optional
      */
-    public function current() : Optional
+    public function current(): Optional
     {
-        return maybe(current($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function previous() : Optional
-    {
-        return maybe(prev($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function begin() : Optional
-    {
-        return maybe(reset($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function end() : Optional
-    {
-        return maybe(end($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function peek() : Optional
-    {
-        next($this->data);
         if ($this->isValid()) {
-            $result = $this->current();
-            prev($this->data);
-
-            return $result;
+            return maybe(current($this->data));
         }
 
         return none();
@@ -550,20 +535,79 @@ final class Iterator
     /**
      * @return Optional
      */
-    public function next() : Optional
+    public function previous(): Optional
     {
-        $result = $this->current();
-        if ($this->isValid()) {
-            next($this->data);
+        if ($this->hasPrevious()) {
+            $this->index--;
+
+            return maybe(prev($this->data));
         }
 
-        return $result;
+        return none();
+    }
+
+    /**
+     * @return Optional
+     */
+    public function begin(): Optional
+    {
+        $this->index = 0;
+        if ($this->isEmpty()) {
+            return none();
+        }
+
+        return maybe(reset($this->data));
+    }
+
+    /**
+     * @return Optional
+     */
+    public function end(): Optional
+    {
+        $this->index = $this->length() - 1;
+        if ($this->isEmpty()) {
+            return none();
+        }
+
+        return maybe(end($this->data));
+    }
+
+    /**
+     * @return Optional
+     */
+    public function peek(): Optional
+    {
+        next($this->data);
+        if (key($this->data) !== null) {
+            try {
+                return $this->current();
+            } finally {
+                prev($this->data);
+            }
+        }
+
+        return none();
+    }
+
+    /**
+     * @return Optional
+     */
+    public function next(): Optional
+    {
+        try {
+            return $this->current();
+        } finally {
+            if ($this->isValid()) {
+                $this->index++;
+                next($this->data);
+            }
+        }
     }
 
     /**
      * @return bool
      */
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return empty($this->data);
     }
@@ -571,43 +615,24 @@ final class Iterator
     /**
      * @return bool
      */
-    public function isValid() : bool
+    public function isValid(): bool
     {
-        return key($this->data) !== null;
-    }
-}
-
-/**
- * @param array[] ...$args
- *
- * @return Iterator
- */
-function chain(array ...$args) : Iterator
-{
-    $data = [];
-    foreach ($args as $arg) {
-        array_push($data, ...$arg);
+        return $this->index < $this->length();
     }
 
-    return new Iterator($data);
-}
+    /**
+     * @return bool
+     */
+    public function hasNext(): bool
+    {
+        return ($this->index + 1) < $this->length();
+    }
 
-/**
- * @param array $data
- *
- * @return Iterator
- */
-function iter(array $data) : Iterator
-{
-    return new Iterator($data);
-}
-
-/**
- * @param string $str
- *
- * @return Iterator
- */
-function chars(string $str) : Iterator
-{
-    return new Iterator(str_split($str));
+    /**
+     * @return bool
+     */
+    public function hasPrevious(): bool
+    {
+        return $this->index > 0;
+    }
 }

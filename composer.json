@@ -30,9 +30,7 @@
             "src/"
         ],
         "files": [
-            "src/Iterator.php",
-            "src/Cycle.php",
-            "src/Only.php"
+            "src/functions.php"
         ],
         "psr-4": {
             "Dgame\\Iterator\\": "src/"

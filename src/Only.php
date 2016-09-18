@@ -11,7 +11,7 @@ final class Only
     /**
      * @var mixed
      */
-    private $value = null;
+    private $value;
 
     /**
      * Only constructor.
@@ -28,18 +28,8 @@ final class Only
      *
      * @return Iterator
      */
-    public function repeat(int $n) : Iterator
+    public function repeat(int $n): Iterator
     {
         return new Iterator(array_fill(0, $n, $this->value));
     }
-}
-
-/**
- * @param $value
- *
- * @return Only
- */
-function only($value) : Only
-{
-    return new Only($value);
 }

@@ -17,7 +17,7 @@ class IteratorTest extends TestCase
 
         $this->assertTrue($it->next()->isSome());
         $this->assertTrue($it->next()->isSome());
-        $this->assertTrue($it->next()->isNone());
+        $this->assertTrue($it->next()->isSome());
         $this->assertTrue($it->next()->isNone());
         $this->assertTrue($it->next()->isSome());
         $this->assertTrue($it->next()->isSome());

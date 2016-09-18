@@ -30,7 +30,7 @@ final class Consume
     /**
      * @return Iterator
      */
-    public function intoIterator() : Iterator
+    public function intoIterator(): Iterator
     {
         return iter($this->data);
     }
@@ -38,7 +38,7 @@ final class Consume
     /**
      * @return bool
      */
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return empty($this->data);
     }
@@ -46,7 +46,7 @@ final class Consume
     /**
      * @return Optional
      */
-    public function front() : Optional
+    public function front(): Optional
     {
         if ($this->isEmpty()) {
             return none();
@@ -58,7 +58,7 @@ final class Consume
     /**
      * @return Optional
      */
-    public function back() : Optional
+    public function back(): Optional
     {
         if ($this->isEmpty()) {
             return none();
@@ -70,7 +70,7 @@ final class Consume
     /**
      * @return Optional
      */
-    public function popFront() : Optional
+    public function popFront(): Optional
     {
         if (!$this->isEmpty()) {
             $value = array_shift($this->data);
@@ -84,7 +84,7 @@ final class Consume
     /**
      * @return Optional
      */
-    public function popBack() : Optional
+    public function popBack(): Optional
     {
         if (!$this->isEmpty()) {
             $value = array_pop($this->data);
