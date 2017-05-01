@@ -3,21 +3,6 @@
 namespace Dgame\Iterator;
 
 /**
- * @param array[] ...$args
- *
- * @return Iterator
- */
-function chain(array ...$args): Iterator
-{
-    $data = [];
-    foreach ($args as $arg) {
-        array_push($data, ...$arg);
-    }
-
-    return new Iterator($data);
-}
-
-/**
  * @param array $data
  *
  * @return Iterator
@@ -28,31 +13,26 @@ function iter(array $data): Iterator
 }
 
 /**
- * @param string $str
+ * @param string      $str
+ * @param string|null $delimiter
  *
  * @return Iterator
  */
-function chars(string $str): Iterator
+function chars(string $str, string $delimiter = null): Iterator
 {
-    return new Iterator(str_split($str));
-}
+    if ($delimiter !== null) {
+        return new Iterator(explode($delimiter, $str));
+    }
 
-/**
- * @param array $data
- *
- * @return Cycle
- */
-function cycle(array $data): Cycle
-{
-    return new Cycle($data);
+    return new Iterator(str_split($str, 1));
 }
 
 /**
  * @param $value
  *
- * @return Only
+ * @return Iterator
  */
-function only($value): Only
+function only($value): Iterator
 {
-    return new Only($value);
+    return new Iterator(is_array($value) ? $value : [$value]);
 }

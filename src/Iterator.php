@@ -2,11 +2,6 @@
 
 namespace Dgame\Iterator;
 
-use Dgame\Iterator\Optional\Optional;
-use function Dgame\Iterator\Optional\maybe;
-use function Dgame\Iterator\Optional\none;
-use function Dgame\Iterator\Optional\some;
-
 /**
  * Class Iterator
  * @package Dgame\Iterator
@@ -16,28 +11,26 @@ final class Iterator
     /**
      * @var array
      */
-    private $data = [];
-    /**
-     * @var int
-     */
-    private $index = 0;
+    private $values = [];
 
     /**
      * Iterator constructor.
      *
-     * @param array $data
+     * @param array $values
      */
-    public function __construct(array $data)
+    public function __construct(array $values)
     {
-        $this->data = $data;
+        $this->values = $values;
     }
 
     /**
-     * @return int
+     * @param string $glue
+     *
+     * @return string
      */
-    public function getIndex(): int
+    public function implode(string $glue = ''): string
     {
-        return $this->index;
+        return implode($glue, $this->values);
     }
 
     /**
@@ -45,149 +38,144 @@ final class Iterator
      */
     public function collect(): array
     {
-        return $this->data;
+        return $this->values;
     }
 
     /**
-     * @param string|null $glue
-     *
-     * @return string
+     * @return bool
      */
-    public function implode(string $glue = null): string
+    public function isEmpty(): bool
     {
-        if ($glue === null) {
-            return implode($this->data);
+        return empty($this->values);
+    }
+
+    /**
+     * @return int
+     */
+    public function length(): int
+    {
+        return count($this->values);
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function values(): self
+    {
+        return new self(array_values($this->values));
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function keys(): self
+    {
+        return new self(array_keys($this->values));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function first()
+    {
+        return reset($this->values);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function last()
+    {
+        return end($this->values);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function next()
+    {
+        return next($this->values);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function previous()
+    {
+        return prev($this->values);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function peek()
+    {
+        $value = $this->next();
+        $this->previous();
+
+        return $value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function popBack()
+    {
+        return array_pop($this->values);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function popFront()
+    {
+        return array_shift($this->values);
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return Iterator
+     */
+    public function take(int $amount): self
+    {
+        return new self(array_slice($this->values, 0, $amount));
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return Iterator
+     */
+    public function skip(int $amount): self
+    {
+        return new self(array_slice($this->values, $amount));
+    }
+
+    /**
+     * @param int $times
+     *
+     * @return Iterator
+     */
+    public function repeat(int $times): self
+    {
+        $values = [];
+        for ($i = 0; $i < $times; $i++) {
+            $values = array_merge($values, $this->values);
         }
 
-        return implode($glue, $this->data);
+        return new self($values);
     }
 
     /**
-     * @return Consume
-     */
-    public function consume(): Consume
-    {
-        return new Consume($this);
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function values(): Iterator
-    {
-        return new self(array_values($this->data));
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function keys(): Iterator
-    {
-        return new self(array_keys($this->data));
-    }
-
-    /**
-     * @param callable $callback
+     * @param int $from
+     * @param int $too
      *
      * @return Iterator
      */
-    public function map(callable $callback): Iterator
+    public function slice(int $from, int $too): self
     {
-        return new self(array_map($callback, $this->data));
-    }
-
-    /**
-     * @param callable $callback
-     *
-     * @return Iterator
-     */
-    public function filter(callable $callback): Iterator
-    {
-        return new self(array_filter($this->data, $callback, ARRAY_FILTER_USE_BOTH));
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function filterEmpty(): Iterator
-    {
-        return new self(array_filter($this->data));
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function group(): Iterator
-    {
-        $result = [];
-        foreach ($this->data as $key => $value) {
-            $result[$value][] = $value;
-        }
-
-        return new self(array_values($result));
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function groupKeepKeys(): Iterator
-    {
-        $result = [];
-        foreach ($this->data as $key => $value) {
-            $result[$value][$key] = $value;
-        }
-
-        return new self(array_values($result));
-    }
-
-    /**
-     * @param      $column_key
-     * @param null $index_key
-     *
-     * @return Iterator
-     */
-    public function extractByKey($column_key, $index_key = null): Iterator
-    {
-        return new self(array_column($this->data, $column_key, $index_key));
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function unique(): Iterator
-    {
-        return new self(array_unique($this->data));
-    }
-
-    /**
-     * @param int $n
-     *
-     * @return Iterator
-     */
-    public function take(int $n): Iterator
-    {
-        return new self(array_slice($this->data, 0, $n));
-    }
-
-    /**
-     * @param int $n
-     *
-     * @return Iterator
-     */
-    public function skip(int $n): Iterator
-    {
-        return new self(array_slice($this->data, $n));
-    }
-
-    /**
-     * @param int $offset
-     * @param int $length
-     *
-     * @return Iterator
-     */
-    public function slice(int $offset, int $length): Iterator
-    {
-        return new self(array_slice($this->data, $offset, $length));
+        return new self(array_slice($this->values, $from, $too - $from));
     }
 
     /**
@@ -195,124 +183,9 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function chunks(int $size): Iterator
+    public function chunks(int $size): self
     {
-        $chunks = array_chunk($this->data, $size);
-
-        return new self($chunks);
-    }
-
-    /**
-     * @param callable $callback
-     *
-     * @return Iterator
-     */
-    public function takeWhile(callable $callback): Iterator
-    {
-        $n = 0;
-        foreach ($this->data as $value) {
-            if (!$callback($value)) {
-                break;
-            }
-
-            $n++;
-        }
-
-        return $this->take($n);
-    }
-
-    /**
-     * @param callable $callback
-     *
-     * @return Iterator
-     */
-    public function skipWhile(callable $callback): Iterator
-    {
-        $n = 0;
-        foreach ($this->data as $value) {
-            if (!$callback($value)) {
-                break;
-            }
-
-            $n++;
-        }
-
-        return $this->skip($n);
-    }
-
-    /**
-     * @param $left
-     * @param $right
-     *
-     * @return Iterator
-     */
-    public function between($left, $right): Iterator
-    {
-        if ($this->firstIndexOf($left)->isSome($offset)) {
-            if ($this->firstIndexOf($right)->isSome($range)) {
-                return $this->slice($offset + 1, $range - $offset - 1);
-            }
-
-            return $this->skip($offset + 1);
-        }
-
-        return new self([]);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Iterator
-     */
-    public function before($value): Iterator
-    {
-        if ($this->firstIndexOf($value)->isSome($n)) {
-            return $this->take($n);
-        }
-
-        return new self([]);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Iterator
-     */
-    public function after($value): Iterator
-    {
-        if ($this->firstIndexOf($value)->isSome($n)) {
-            return $this->skip($n + 1);
-        }
-
-        return new self([]);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Iterator
-     */
-    public function from($value): Iterator
-    {
-        if ($this->firstIndexOf($value)->isSome($n)) {
-            return $this->skip($n);
-        }
-
-        return new self([]);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Iterator
-     */
-    public function until($value): Iterator
-    {
-        if ($this->firstIndexOf($value)->isSome($n)) {
-            return $this->take($n + 1);
-        }
-
-        return new self([]);
+        return new self(array_chunk($this->values, $size));
     }
 
     /**
@@ -323,77 +196,125 @@ final class Iterator
      */
     public function fold(callable $callback, $initial = null)
     {
-        return array_reduce($this->data, $callback, $initial);
+        return array_reduce($this->values, $callback, $initial);
     }
 
     /**
-     * @param $key
+     * @param callable|null $callback
      *
-     * @return Optional
+     * @return Iterator
      */
-    public function at($key): Optional
+    public function filter(callable $callback = null): self
     {
-        if (array_key_exists($key, $this->data)) {
-            return maybe($this->data[$key]);
+        if ($callback === null) {
+            return new self(array_filter($this->values));
         }
 
-        return none();
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Optional
-     */
-    public function find($value): Optional
-    {
-        if ($this->firstKeyOf($value)->isSome($key)) {
-            return maybe($this->data[$key]);
-        }
-
-        return none();
+        return new self(array_filter($this->values, $callback));
     }
 
     /**
      * @param callable $callback
      *
-     * @return array
+     * @return Iterator
      */
-    public function findBy(callable $callback): array
+    public function map(callable $callback): self
     {
-        $results = [];
-        foreach ($this->data as $key => $value) {
-            if ($callback($value, $key)) {
-                $results[$key] = $value;
+        return new self(array_map($callback, $this->values));
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function unique(): self
+    {
+        return new self(array_unique($this->values));
+    }
+
+    /**
+     * @return Iterator
+     */
+    public function reverse(): self
+    {
+        return new self(array_reverse($this->values));
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return int
+     */
+    private function countWhile(callable $callback): int
+    {
+        $index = 0;
+        foreach ($this->values as $key => $value) {
+            if (!$callback($value, $key)) {
+                break;
             }
+
+            $index++;
         }
 
-        return $results;
+        return $index;
     }
 
     /**
-     * @param $value
+     * @param callable $callback
      *
-     * @return Optional
+     * @return int
      */
-    public function firstIndexOf($value): Optional
+    private function countUntil(callable $callback): int
     {
-        return $this->values()->firstKeyOf($value);
+        $index = 0;
+        foreach ($this->values as $key => $value) {
+            if ($callback($value, $key)) {
+                break;
+            }
+
+            $index++;
+        }
+
+        return $index;
     }
 
     /**
-     * @param $value
+     * @param callable $callback
      *
-     * @return Optional
+     * @return Iterator
      */
-    public function firstKeyOf($value): Optional
+    public function takeWhile(callable $callback): self
     {
-        $key = array_search($value, $this->data);
-        if ($key === false) {
-            return none();
-        }
+        return $this->take($this->countWhile($callback));
+    }
 
-        return some($key);
+    /**
+     * @param callable $callback
+     *
+     * @return Iterator
+     */
+    public function takeUntil(callable $callback): self
+    {
+        return $this->take($this->countUntil($callback));
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return Iterator
+     */
+    public function skipWhile(callable $callback): self
+    {
+        return $this->skip($this->countWhile($callback));
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return Iterator
+     */
+    public function skipUntil(callable $callback): self
+    {
+        return $this->skip($this->countUntil($callback));
     }
 
     /**
@@ -401,9 +322,13 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function allIndicesOf($value): Iterator
+    public function from($value): self
     {
-        return $this->values()->allKeysOf($value);
+        $amount = $this->countUntil(function ($val) use ($value) {
+            return $val === $value;
+        });
+
+        return $this->skip($amount);
     }
 
     /**
@@ -411,9 +336,53 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function allKeysOf($value): Iterator
+    public function until($value): self
     {
-        return new self(array_keys($this->data, $value));
+        $amount = $this->countUntil(function ($val) use ($value) {
+            return $val === $value;
+        });
+
+        return $this->take($amount + 1);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function before($value): self
+    {
+        return $this->until($value)->take(-1);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function after($value): self
+    {
+        return $this->from($value)->skip(1);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function keyOf($value)
+    {
+        return array_search($value, $this->values);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Iterator
+     */
+    public function keysOf($value): self
+    {
+        return new self(array_keys($this->values, $value));
     }
 
     /**
@@ -423,8 +392,8 @@ final class Iterator
      */
     public function all(callable $callback): bool
     {
-        foreach ($this->data as $value) {
-            if (!$callback($value)) {
+        foreach ($this->values as $key => $value) {
+            if (!$callback($value, $key)) {
                 return false;
             }
         }
@@ -439,200 +408,12 @@ final class Iterator
      */
     public function any(callable $callback): bool
     {
-        foreach ($this->data as $value) {
-            if ($callback($value)) {
+        foreach ($this->values as $key => $value) {
+            if ($callback($value, $key)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * @return float
-     */
-    public function sum(): float
-    {
-        return array_sum($this->data);
-    }
-
-    /**
-     * @return float
-     */
-    public function product(): float
-    {
-        return array_product($this->data);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function max()
-    {
-        return max($this->data);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function min()
-    {
-        return min($this->data);
-    }
-
-    /**
-     * @return int
-     */
-    public function length(): int
-    {
-        return count($this->data);
-    }
-
-    /**
-     * @return array
-     */
-    public function countOccurrences(): array
-    {
-        return array_count_values($this->data);
-    }
-
-    /**
-     * @return float
-     */
-    public function average(): float
-    {
-        return $this->sum() / $this->length();
-    }
-
-    /**
-     * @return Iterator
-     */
-    public function reverse(): Iterator
-    {
-        return new self(array_reverse($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function key(): Optional
-    {
-        return maybe(key($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function current(): Optional
-    {
-        if ($this->isValid()) {
-            return maybe(current($this->data));
-        }
-
-        return none();
-    }
-
-    /**
-     * @return Optional
-     */
-    public function previous(): Optional
-    {
-        if ($this->hasPrevious()) {
-            $this->index--;
-
-            return maybe(prev($this->data));
-        }
-
-        return none();
-    }
-
-    /**
-     * @return Optional
-     */
-    public function begin(): Optional
-    {
-        $this->index = 0;
-        if ($this->isEmpty()) {
-            return none();
-        }
-
-        return maybe(reset($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function end(): Optional
-    {
-        $this->index = $this->length() - 1;
-        if ($this->isEmpty()) {
-            return none();
-        }
-
-        return maybe(end($this->data));
-    }
-
-    /**
-     * @return Optional
-     */
-    public function peek(): Optional
-    {
-        next($this->data);
-        if (key($this->data) !== null) {
-            try {
-                return $this->current();
-            } finally {
-                prev($this->data);
-            }
-        }
-
-        return none();
-    }
-
-    /**
-     * @return Optional
-     */
-    public function next(): Optional
-    {
-        try {
-            return $this->current();
-        } finally {
-            if ($this->isValid()) {
-                $this->index++;
-                next($this->data);
-            }
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty(): bool
-    {
-        return empty($this->data);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isValid(): bool
-    {
-        return $this->index < $this->length();
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasNext(): bool
-    {
-        return ($this->index + 1) < $this->length();
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasPrevious(): bool
-    {
-        return $this->index > 0;
     }
 }
