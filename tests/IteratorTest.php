@@ -107,9 +107,7 @@ class IteratorTest extends TestCase
 
     public function testChunks()
     {
-        $it = chars('FooBar')->chunks(2);
-
-        $this->assertEquals([['F', 'o'], ['o', 'B'], ['a', 'r']], $it->collect());
+        $this->assertEquals([['F', 'o'], ['o', 'B'], ['a', 'r']], chars('FooBar')->chunks(2)->collect());
     }
 
     public function testFold()

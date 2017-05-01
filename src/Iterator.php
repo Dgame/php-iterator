@@ -292,29 +292,9 @@ final class Iterator
      *
      * @return Iterator
      */
-    public function takeUntil(callable $callback): self
-    {
-        return $this->take($this->countUntil($callback));
-    }
-
-    /**
-     * @param callable $callback
-     *
-     * @return Iterator
-     */
     public function skipWhile(callable $callback): self
     {
         return $this->skip($this->countWhile($callback));
-    }
-
-    /**
-     * @param callable $callback
-     *
-     * @return Iterator
-     */
-    public function skipUntil(callable $callback): self
-    {
-        return $this->skip($this->countUntil($callback));
     }
 
     /**
