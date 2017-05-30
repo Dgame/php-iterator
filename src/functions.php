@@ -13,18 +13,36 @@ function iter(array $data): Iterator
 }
 
 /**
- * @param string      $str
- * @param string|null $delimiter
+ * @param string $str
  *
  * @return Iterator
  */
-function chars(string $str, string $delimiter = null): Iterator
+function chars(string $str): Iterator
 {
-    if ($delimiter !== null) {
-        return new Iterator(explode($delimiter, $str));
-    }
-
     return new Iterator(str_split($str, 1));
+}
+
+/**
+ * @param string $str
+ * @param string $delimiter
+ *
+ * @return Iterator
+ */
+function separate(string $str, string $delimiter): Iterator
+{
+    return new Iterator(explode($delimiter, $str));
+}
+
+/**
+ * @param string $str
+ *
+ * @return Iterator
+ */
+function lines(string $str): Iterator
+{
+    $iter = new Iterator(preg_split("/\r\n|\n|\r/", $str));
+
+    return $iter->map('trim')->filter();
 }
 
 /**

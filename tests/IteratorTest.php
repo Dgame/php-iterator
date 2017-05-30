@@ -3,7 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use function Dgame\Iterator\chars;
 use function Dgame\Iterator\iter;
+use function Dgame\Iterator\lines;
 use function Dgame\Iterator\only;
+use function Dgame\Iterator\separate;
 
 class IteratorTest extends TestCase
 {
@@ -35,7 +37,7 @@ class IteratorTest extends TestCase
 
     public function testExplodeChars()
     {
-        $it = chars(parent::class, '\\');
+        $it = separate(parent::class, '\\');
 
         $this->assertEquals('PHPUnit\Framework\TestCase', $it->implode('\\'));
         $this->assertEquals('PHPUnit', $it->first());
@@ -43,24 +45,47 @@ class IteratorTest extends TestCase
         $this->assertEquals('TestCase', $it->next());
     }
 
+    public function testLines()
+    {
+        $this->assertEmpty(lines('')->collect());
+        $this->assertEmpty(lines(PHP_EOL)->collect());
+        $this->assertEmpty(lines(PHP_EOL . PHP_EOL)->collect());
+        $this->assertEquals(['a'], lines('a')->collect());
+        $this->assertEquals(['a', 'b'], lines("a\nb")->collect());
+        $this->assertEquals(['a', 'b'], lines("a\rb")->collect());
+        $this->assertEquals(['a', 'b'], lines("a\r\nb")->collect());
+        $this->assertEquals(['a', 'b'], lines('a' . PHP_EOL . 'b')->collect());
+        $this->assertEquals(['a', 'b'], lines('a' . PHP_EOL . 'b' . PHP_EOL)->collect());
+    }
+
+    public function testSeparate()
+    {
+        $this->assertEquals([''], separate('', PHP_EOL)->collect());
+        $this->assertEquals(['', ''], separate(PHP_EOL, PHP_EOL)->collect());
+        $this->assertEquals(['', '', ''], separate(PHP_EOL . PHP_EOL, PHP_EOL)->collect());
+        $this->assertEquals(['a'], lines('a')->collect());
+        $this->assertEquals(['a', 'b'], separate('a' . PHP_EOL . 'b', PHP_EOL)->collect());
+        $this->assertEquals(['a', 'b', ''], separate('a' . PHP_EOL . 'b' . PHP_EOL, PHP_EOL)->collect());
+    }
+
     public function testFirst()
     {
-        $this->assertEquals('PHPUnit', chars(parent::class, '\\')->first());
+        $this->assertEquals('PHPUnit', separate(parent::class, '\\')->first());
     }
 
     public function testLast()
     {
-        $this->assertEquals('TestCase', chars(parent::class, '\\')->last());
+        $this->assertEquals('TestCase', separate(parent::class, '\\')->last());
     }
 
     public function testPopFront()
     {
-        $this->assertEquals('PHPUnit', chars(parent::class, '\\')->popFront());
+        $this->assertEquals('PHPUnit', separate(parent::class, '\\')->popFront());
     }
 
     public function testPopBack()
     {
-        $this->assertEquals('TestCase', chars(parent::class, '\\')->popBack());
+        $this->assertEquals('TestCase', separate(parent::class, '\\')->popBack());
     }
 
     public function testCollect()
