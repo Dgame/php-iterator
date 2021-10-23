@@ -1,2 +1,5 @@
-.idea
-vendor
+/vendor
+/.idea
+.env
+.phpunit.result.cache
+*.lock
