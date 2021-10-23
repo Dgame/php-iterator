@@ -1,9 +1,7 @@
 {
     "name": "dgame/php-iterator",
-    "description": "php iterator",
-    "license": "MIT",
     "type": "library",
-    "homepage": "https://github.com/php-iterator",
+    "description": "php iterator",
     "keywords": [
         "Iterator",
         "Array",
@@ -12,6 +10,8 @@
         "High Order Functions",
         "Functional"
     ],
+    "homepage": "https://github.com/php-iterator",
+    "license": "MIT",
     "authors": [
         {
             "name": "Randy Schütt",
@@ -19,28 +19,53 @@
         }
     ],
     "require": {
-        "php": ">=7.0"
+        "php": "^8.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "5.*.*"
+        "ergebnis/composer-normalize": "^2.4",
+        "ergebnis/phpstan-rules": "^0.15",
+        "php-parallel-lint/php-parallel-lint": "^1.2",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-deprecation-rules": "^0.12",
+        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpunit/phpunit": "^9.4",
+        "roave/security-advisories": "dev-latest",
+        "slevomat/coding-standard": "dev-master",
+        "spaceemotion/php-coding-standard": "dev-master",
+        "spaze/phpstan-disallowed-calls": "^1.5",
+        "symplify/easy-coding-standard": "^9.3",
+        "thecodingmachine/phpstan-safe-rule": "^1.0",
+        "thecodingmachine/phpstan-strict-rules": "^0.12"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.0"
+        },
+        "preferred-install": "dist",
+        "process-timeout": 0,
+        "sort-packages": true
     },
     "autoload": {
+        "psr-4": {
+            "Dgame\\Iterator\\": "src/"
+        },
         "classmap": [
             "src/"
         ],
         "files": [
             "src/functions.php"
-        ],
-        "psr-4": {
-            "Dgame\\Iterator\\": "src/"
-        }
-    },
-    "scripts": {
-        "test": [
-            "phpunit"
-        ],
-        "coverage": [
-            "phpunit --coverage-clover=coverage"
         ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "coverage": "phpunit --coverage-clover=coverage",
+        "lint": "phpcstd --continue",
+        "lint:fix": "phpcstd --fix --continue",
+        "lint:fix-style": "ecs --fix",
+        "lint:static": "phpstan --memory-limit=-1",
+        "lint:style": "ecs",
+        "test": "phpunit"
     }
 }

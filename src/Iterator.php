@@ -1,64 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dgame\Iterator;
 
 /**
- * Class Iterator
- * @package Dgame\Iterator
+ * @template K of int|string
+ * @template V
  */
 final class Iterator
 {
     /**
-     * @var array
+     * @param array<K, V> $values
      */
-    private $values = [];
-
-    /**
-     * Iterator constructor.
-     *
-     * @param array $values
-     */
-    public function __construct(array $values)
+    public function __construct(private array $values)
     {
-        $this->values = $values;
     }
 
-    /**
-     * @param string $glue
-     *
-     * @return string
-     */
     public function implode(string $glue = ''): string
     {
         return implode($glue, $this->values);
     }
 
     /**
-     * @return array
+     * @return array<K, V>
      */
     public function collect(): array
     {
         return $this->values;
     }
 
-    /**
-     * @return bool
-     */
     public function isEmpty(): bool
     {
-        return empty($this->values);
+        return $this->values === [];
     }
 
-    /**
-     * @return int
-     */
+    public function isNotEmpty(): bool
+    {
+        return $this->values !== [];
+    }
+
     public function length(): int
     {
         return count($this->values);
     }
 
     /**
-     * @return Iterator
+     * @return Iterator<int, V>
      */
     public function values(): self
     {
@@ -66,7 +54,7 @@ final class Iterator
     }
 
     /**
-     * @return Iterator
+     * @return self<int, K>
      */
     public function keys(): self
     {
@@ -74,41 +62,49 @@ final class Iterator
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function first()
+    public function first(): mixed
     {
-        return reset($this->values);
+        $first = reset($this->values);
+
+        return $first === false ? null : $first;
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function last()
+    public function last(): mixed
     {
-        return end($this->values);
+        $last = end($this->values);
+
+        return $last === false ? null : $last;
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function next()
+    public function next(): mixed
     {
-        return next($this->values);
+        $next = next($this->values);
+
+        return $next === false ? null : $next;
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function previous()
+    public function previous(): mixed
     {
-        return prev($this->values);
+        $prev = prev($this->values);
+
+        return $prev === false ? null : $prev;
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function peek()
+    public function peek(): mixed
     {
         $value = $this->next();
         $this->previous();
@@ -117,25 +113,29 @@ final class Iterator
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function popBack()
+    public function popBack(): mixed
     {
-        return array_pop($this->values);
+        $last = array_pop($this->values);
+
+        return $last === false ? null : $last;
     }
 
     /**
-     * @return mixed
+     * @return V|null
      */
-    public function popFront()
+    public function popFront(): mixed
     {
-        return array_shift($this->values);
+        $first = array_shift($this->values);
+
+        return $first === false ? null : $first;
     }
 
     /**
      * @param int $amount
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function take(int $amount): self
     {
@@ -145,7 +145,7 @@ final class Iterator
     /**
      * @param int $amount
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function skip(int $amount): self
     {
@@ -155,13 +155,13 @@ final class Iterator
     /**
      * @param int $times
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function repeat(int $times): self
     {
         $values = [];
         for ($i = 0; $i < $times; $i++) {
-            $values = array_merge($values, $this->values);
+            $values += $this->values;
         }
 
         return new self($values);
@@ -171,7 +171,7 @@ final class Iterator
      * @param int $from
      * @param int $too
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function slice(int $from, int $too): self
     {
@@ -181,28 +181,29 @@ final class Iterator
     /**
      * @param int $size
      *
-     * @return Iterator
+     * @return self<int|string, V[]>
      */
     public function chunks(int $size): self
     {
+        /** @phpstan-ignore-next-line */
         return new self(array_chunk($this->values, $size));
     }
 
     /**
-     * @param callable $callback
-     * @param null     $initial
+     * @param callable(V):V $callback
+     * @param V $initial
      *
-     * @return mixed
+     * @return V
      */
-    public function fold(callable $callback, $initial = null)
+    public function fold(callable $callback, mixed $initial = null): mixed
     {
         return array_reduce($this->values, $callback, $initial);
     }
 
     /**
-     * @param callable|null $callback
+     * @param callable(V):bool|null $callback
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function filter(callable $callback = null): self
     {
@@ -214,9 +215,9 @@ final class Iterator
     }
 
     /**
-     * @param callable $callback
+     * @param callable(V):V $callback
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function map(callable $callback): self
     {
@@ -224,7 +225,7 @@ final class Iterator
     }
 
     /**
-     * @return Iterator
+     * @return self<K, V>
      */
     public function unique(): self
     {
@@ -232,7 +233,7 @@ final class Iterator
     }
 
     /**
-     * @return Iterator
+     * @return self<K, V>
      */
     public function reverse(): self
     {
@@ -240,9 +241,7 @@ final class Iterator
     }
 
     /**
-     * @param callable $callback
-     *
-     * @return int
+     * @param callable(V, K):bool $callback
      */
     private function countWhile(callable $callback): int
     {
@@ -259,9 +258,7 @@ final class Iterator
     }
 
     /**
-     * @param callable $callback
-     *
-     * @return int
+     * @param callable(V, K):bool $callback
      */
     private function countUntil(callable $callback): int
     {
@@ -278,9 +275,9 @@ final class Iterator
     }
 
     /**
-     * @param callable $callback
+     * @param callable(V):bool $callback
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function takeWhile(callable $callback): self
     {
@@ -288,9 +285,9 @@ final class Iterator
     }
 
     /**
-     * @param callable $callback
+     * @param callable(V):bool $callback
      *
-     * @return Iterator
+     * @return self<K, V>
      */
     public function skipWhile(callable $callback): self
     {
@@ -298,77 +295,73 @@ final class Iterator
     }
 
     /**
-     * @param $value
+     * @param V $value
      *
-     * @return Iterator
+     * @return self<K, V>
      */
-    public function from($value): self
+    public function from(mixed $value): self
     {
-        $amount = $this->countUntil(function ($val) use ($value) {
-            return $val === $value;
-        });
+        $amount = $this->countUntil(static fn($val) => $val === $value);
 
         return $this->skip($amount);
     }
 
     /**
-     * @param $value
+     * @param V $value
      *
-     * @return Iterator
+     * @return self<K, V>
      */
-    public function until($value): self
+    public function until(mixed $value): self
     {
-        $amount = $this->countUntil(function ($val) use ($value) {
-            return $val === $value;
-        });
+        $amount = $this->countUntil(static fn($val) => $val === $value);
 
         return $this->take($amount + 1);
     }
 
     /**
-     * @param $value
+     * @param V $value
      *
-     * @return Iterator
+     * @return self<K, V>
      */
-    public function before($value): self
+    public function before(mixed $value): self
     {
         return $this->until($value)->take(-1);
     }
 
     /**
-     * @param $value
+     * @param V $value
      *
-     * @return Iterator
+     * @return self<K, V>
      */
-    public function after($value): self
+    public function after(mixed $value): self
     {
         return $this->from($value)->skip(1);
     }
 
     /**
-     * @param $value
+     * @param K $value
      *
-     * @return mixed
+     * @return string|int|null
      */
-    public function keyOf($value)
+    public function keyOf(mixed $value): string|int|null
     {
-        return array_search($value, $this->values);
+        $result = array_search($value, $this->values, strict: true);
+
+        return $result === false ? null : $result;
     }
 
     /**
-     * @param $value
+     * @param K $value
      *
-     * @return Iterator
+     * @return self<int, K>
      */
-    public function keysOf($value): self
+    public function keysOf(mixed $value): self
     {
-        return new self(array_keys($this->values, $value));
+        return new self(array_keys($this->values, $value, strict: true));
     }
 
     /**
-     * @param callable $callback
-     *
-     * @return bool
+     * @param callable(V, K):bool $callback
      */
     public function all(callable $callback): bool
     {
@@ -382,9 +375,7 @@ final class Iterator
     }
 
     /**
-     * @param callable $callback
-     *
-     * @return bool
+     * @param callable(V, K):bool $callback
      */
     public function any(callable $callback): bool
     {

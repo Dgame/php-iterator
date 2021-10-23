@@ -1,21 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dgame\Iterator;
 
+use Safe\Exceptions\PcreException;
+
 /**
- * @param array $data
+ * @param iterable<int|string, mixed> $data
  *
- * @return Iterator
+ * @return Iterator<int|string, mixed>
  */
-function iter(array $data): Iterator
+function iter(iterable $data): Iterator
 {
-    return new Iterator($data);
+    return new Iterator(...$data);
 }
 
 /**
  * @param string $str
  *
- * @return Iterator
+ * @return Iterator<int, string>
  */
 function chars(string $str): Iterator
 {
@@ -23,10 +27,10 @@ function chars(string $str): Iterator
 }
 
 /**
- * @param string $str
- * @param string $delimiter
+ * @param string           $str
+ * @param non-empty-string $delimiter
  *
- * @return Iterator
+ * @return Iterator<int, string>
  */
 function separate(string $str, string $delimiter): Iterator
 {
@@ -36,21 +40,36 @@ function separate(string $str, string $delimiter): Iterator
 /**
  * @param string $str
  *
- * @return Iterator
+ * @return Iterator<int, string>
+ * @throws PcreException
  */
 function lines(string $str): Iterator
 {
-    $iter = new Iterator(preg_split("/\r\n|\n|\r/", $str));
+    $iter = new Iterator(\Safe\preg_split("/\r\n|\n|\r/", $str));
 
     return $iter->map('trim')->filter();
 }
 
 /**
- * @param $value
+ * @template V
  *
- * @return Iterator
+ * @param V $value
+ *
+ * @return Iterator<int|string, V>
  */
-function only($value): Iterator
+function only(mixed $value): Iterator
 {
     return new Iterator(is_array($value) ? $value : [$value]);
+}
+
+/**
+ * @template K of int|string
+ *
+ * @param array<K, mixed> $values
+ *
+ * @return Iterator<int, K>
+ */
+function keys(array $values): Iterator
+{
+    return new Iterator(array_keys($values));
 }
